@@ -15,28 +15,36 @@ class TournamentPublicController extends Controller
      */
     public function verifyPin(Request $request)
     {
-        $request->validate(['pin' => 'required|string|size:6']);
-        
-        $tournament = Tournament::where('pin', $request->pin)->first();
-        
-        if ($tournament) {
+        try {
+            $request->validate(['pin' => 'required|string|size:6']);
+            
+            $tournament = Tournament::where('pin', $request->pin)->first();
+            
+            if ($tournament) {
+                return response()->json([
+                    'success' => true,
+                    'is_tournament' => true,
+                    'message' => 'PIN valid untuk Mode Turnamen: ' . $tournament->title,
+                    'tournament' => [
+                        'id' => $tournament->id,
+                        'title' => $tournament->title,
+                        'pin' => $tournament->pin,
+                        'status' => $tournament->status,
+                    ]
+                ]);
+            }
+            
             return response()->json([
-                'success' => true,
-                'is_tournament' => true,
-                'message' => 'PIN valid untuk Mode Turnamen: ' . $tournament->title,
-                'tournament' => [
-                    'id' => $tournament->id,
-                    'title' => $tournament->title,
-                    'pin' => $tournament->pin,
-                    'status' => $tournament->status,
-                ]
+                'success' => false,
+                'is_tournament' => false,
             ]);
+        } catch (\Exception $e) {
+            \Log::error('Tournament verify PIN error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Server Error: ' . $e->getMessage()
+            ], 500);
         }
-        
-        return response()->json([
-            'success' => false,
-            'is_tournament' => false,
-        ]);
     }
 
     /**

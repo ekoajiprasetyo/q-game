@@ -59,33 +59,26 @@ class GameController extends Controller
         // If limit is 0 (from "Semua" option maybe) or greater than available, use count
         if($limit <= 0 || $limit > $allQuestions->count()) $limit = $allQuestions->count();
 
-        // 1. DETERMINISTIC SHUFFLE
-        // Use session ID as seed so the order is preserved on refresh
-        $seed = $session->id;
-        $allQuestions->shuffle($seed); // Shuffle directly modifies or returns? Laravel collection shuffle returns new collection.
-        // Wait, shuffle() with seed argument is supported in recent Laravel versions? 
-        // Laravel's shuffle() simply uses PHP's shuffle() or random logic. It might not accept seed directly in all versions.
-        // Safer approach: Use manual sort with seeded random.
+        // 1. DETERMINISTIC SHUFFLE (Stable per Session)
+        // We use a simple seeded random generator logic to assign a random weight to each question.
+        // This ensures the order is ALWAYS the same for the same Session ID + Question ID combination.
         
-        $shuffled = $allQuestions->sortBy(function($q) use ($seed) {
-            mt_srand($seed + $q->id); // Seed based on session + question ID for consistent random weight
-            return mt_rand();
-        });
+        $assignWeight = function($qId, $salt) use ($session) {
+            // Simple hash-based RNG: sin(seed) * 10000 -> fraction
+            // Using crc32 or md5 is more stable than mt_srand global pollution
+            $hash = md5($session->id . '-' . $qId . '-' . $salt);
+            return hexdec(substr($hash, 0, 8)); // Use first 8 chars as weight
+        };
 
-        // Split for teams (using same shuffled list is fine, they just compete)
-        // Or if we want different orders for teams, we can seed differently: $seed + 1, $seed + 2
-        
         // Team Red
-        $teamRedQuestions = $shuffled->sortBy(function($q) use ($seed) {
-            mt_srand($seed + $q->id + 100); 
-            return mt_rand();
-        })->take($limit)->values();
+        $teamRedQuestions = $allQuestions->sortBy(function($q) use ($assignWeight) {
+            return $assignWeight($q->id, 'red');
+        })->values()->take($limit);
 
         // Team Blue
-        $teamBlueQuestions = $shuffled->sortBy(function($q) use ($seed) {
-            mt_srand($seed + $q->id + 200); 
-            return mt_rand();
-        })->take($limit)->values();
+        $teamBlueQuestions = $allQuestions->sortBy(function($q) use ($assignWeight) {
+            return $assignWeight($q->id, 'blue');
+        })->values()->take($limit);
 
         // 2. CALCULATE RESUME INDICES
         $redIndex = \App\Models\GameRound::where('game_session_id', $session->id)

@@ -333,7 +333,7 @@
         .btn-capsule.hidden { display: none; } /* For Numpad Logic */
 
         /* SHORT ANSWER INPUT (Neutral Style) */
-        .short-answer-input {
+        .short-answer-display {
             width: 100%;
             padding: 12px 20px;
             font-size: 20px;
@@ -348,18 +348,31 @@
             font-family: 'Inter', sans-serif;
             transition: all 0.2s;
             margin-bottom: 10px;
+            min-height: 52px; /* Fixed height to match standard input */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer; /* Interaction hint */
+            position: relative;
         }
-        .short-answer-input::placeholder {
-            color: #94A3B8;
-            font-weight: 500;
-            font-size: 16px;
-        }
-        .short-answer-input:focus {
+        .short-answer-display.active {
             background: #FFFFFF;
             border-color: var(--orange-btn);
             box-shadow: 0 4px 15px rgba(249, 115, 22, 0.15);
-            transform: translateY(-2px);
         }
+        .short-answer-display.disabled {
+             opacity: 0.8;
+             cursor: not-allowed;
+        }
+
+        /* Cursor Blink Animation */
+        .cursor-blink {
+            display: inline-block; width: 2px; height: 24px; background: #334155;
+            animation: blink 1s infinite;
+            margin-left: 2px;
+            vertical-align: middle;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
 
         /* --- VIRTUAL KEYBOARD --- */
         .vk-container {
@@ -878,18 +891,58 @@
                     ansDiv.style.flexDirection = 'column';
                     ansDiv.style.gap = '8px';
 
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.className = 'short-answer-input';
-                    input.placeholder = '';
+                    // === OPTIMIZATION FOR IFP / MULTI-TOUCH ===
+                    // Instead of a real <input> that steals focus, we use a DIV "Fake Input".
+                    // This allows both players to "type" simultaneously without browser focus conflicts.
                     
+                    const input = document.createElement('div');
+                    input.className = 'short-answer-display active';
+                    input.dataset.val = ''; // Internal storage
+                    
+                    // Add Cursor
+                    const cursor = document.createElement('span');
+                    cursor.className = 'cursor-blink';
+                    input.appendChild(cursor);
+
+                    // Polyfill .value property so existing keyboard/submit logic works seamlessly
+                    Object.defineProperty(input, 'value', {
+                        get() { return this.dataset.val; },
+                        set(v) {
+                            if(this.disabled) return; // Stop typing if disabled
+                            this.dataset.val = v;
+                            this.innerText = v;
+                            this.appendChild(cursor);
+                        }
+                    });
+                    
+                    // Polyfill .disabled for styling logic
+                    Object.defineProperty(input, 'disabled', {
+                        get() { return this.classList.contains('disabled'); },
+                        set(v) {
+                            if(v) {
+                                this.classList.add('disabled');
+                                this.classList.remove('active');
+                                if(cursor.parentNode === this) this.removeChild(cursor); // Remove cursor when disabled
+                            } else {
+                                this.classList.remove('disabled');
+                                this.classList.add('active');
+                                this.appendChild(cursor);
+                            }
+                        }
+                    });
+
+                    // Optional: Tap to "focus" (just visual feedback)
+                    input.onclick = () => {
+                        // Could add a pulse effect or ensure it's "active"
+                    };
+
                     const keyboardContainer = document.createElement('div');
                     
                     const btn = document.createElement('button');
                     btn.innerText = 'Kirim Jawaban';
                     btn.className = 'btn-capsule'; // Orange Capsule
                     btn.onclick = () => {
-                        this.handleAnswer(team, input, input.value, q.correct_answer); // Check empty?
+                        this.handleAnswer(team, input, input.value, q.correct_answer); 
                     };
 
                     ansDiv.appendChild(input);
@@ -1042,16 +1095,40 @@
                         btn.style.background = '#10B981'; btn.style.color = 'white';
                         // Logic OK directly submits
                         btn.onclick = () => { 
-                             // Find hidden submit button or call logic directly? 
-                             // Better call logic. But we need context. simulate click on hidden btn
-                             const hiddenBtn = inputElement.parentElement.querySelector('.btn-capsule');
+                             // Call logic directly using the shimmed value
+                             this.handleAnswer(
+                                 // Infer team from container ID or passed context? 
+                                 // We need to know which team this is.
+                                 // Hack: Check closest team zone ID
+                                 container.closest('.team-red-zone') ? 'red' : 'blue', 
+                                 inputElement, // Pass the Fake Input DIV
+                                 inputElement.value, // The shimmed value getter
+                                 // We need the correct answer to validate. But handleAnswer expects just 3 args usually?
+                                 // Wait, handleAnswer(team, element, selected, correct). We need 'correct'.
+                                 // Limitation: renderNumpad doesn't know 'correct'.
+                                 // Solution: Simulate click on the hidden 'Kirim' button which HAS the closure with 'correct'.
+                                 null 
+                             );
+                             
+                             // Better approach: Find the sibling hidden button and click it.
+                             // The structure is: ansDiv -> [FakeInput, NumpadContainer, HiddenButton]
+                             const ansDiv = container.parentElement;
+                             const hiddenBtn = ansDiv.querySelector('.btn-capsule');
                              if(hiddenBtn) hiddenBtn.click();
                         };
                     } else if (key === '⌫') {
                         btn.style.background = '#FECACA'; btn.style.color = '#B91C1C';
-                        btn.onclick = () => { inputElement.value = inputElement.value.slice(0, -1); };
+                        btn.onclick = () => { 
+                            // Support both Input and Fake Div
+                            let val = inputElement.value || ''; 
+                            val = val.slice(0, -1);
+                            inputElement.value = val; // Trigger setter (Div) or native (Input)
+                        };
                     } else {
-                        btn.onclick = () => inputElement.value += key;
+                        btn.onclick = () => {
+                            let val = inputElement.value || '';
+                            inputElement.value = val + key;
+                        };
                     }
                     container.appendChild(btn);
                 });
@@ -1063,12 +1140,13 @@
                 // Initialize State if not exist in this instance (or use closure var if preferred, but instance property is safer)
                 // We'll attach it to the container to keep it localized or just use a local let if re-render is fully self-contained.
                 // Better: Check if we have a state object attached to container, if not init.
+                // Initialize State
                 if (!container.kbState) {
                     container.kbState = { shift: false, caps: false };
                 }
 
                 const renderKeys = () => {
-                    container.innerHTML = ''; // Clear previous content
+                    container.innerHTML = ''; 
 
                     const isUpper = container.kbState.caps || container.kbState.shift;
                     const rows = [
@@ -1086,7 +1164,6 @@
                             const btn = document.createElement('button');
                             btn.className = 'vk-btn';
                             
-                            // Determine Display Char
                             let displayChar = rawChar;
                             if (rawChar.length === 1 && /[a-z]/.test(rawChar)) {
                                 displayChar = isUpper ? rawChar.toUpperCase() : rawChar;
@@ -1094,7 +1171,6 @@
                             
                             btn.innerText = displayChar;
 
-                            // Special Keys Logic
                             if (rawChar === 'caps') {
                                 btn.className += ' wide';
                                 btn.innerText = 'CAPS';
@@ -1126,15 +1202,20 @@
                                 btn.className += ' wide'; 
                                 btn.style.background = '#FECACA'; 
                                 btn.innerText = '⌫';
-                                btn.onclick = () => inputElement.value = inputElement.value.slice(0, -1);
+                                btn.onclick = () => {
+                                    // Robust Delete
+                                    let val = inputElement.value || '';
+                                    val = val.slice(0, -1);
+                                    inputElement.value = val;
+                                };
                             }
                             else {
-                                // Check for Number row (always literal) or Letter row (case sensitive)
                                 const charToInput = (rawChar.length === 1 && /[a-z]/.test(rawChar)) ? displayChar : rawChar;
-                                
                                 btn.onclick = () => {
-                                    inputElement.value += charToInput;
-                                    // Auto-disable shift after one Char
+                                    // Robust Input
+                                    let val = inputElement.value || '';
+                                    inputElement.value = val + charToInput;
+                                    
                                     if (container.kbState.shift) {
                                         container.kbState.shift = false;
                                         renderKeys();
@@ -1147,36 +1228,49 @@
                         container.appendChild(rowDiv);
                     });
                     
-                    // Space Row
                     const spaceRow = document.createElement('div');
                     spaceRow.className = 'vk-row';
                     
                     const spaceBtn = document.createElement('button');
                     spaceBtn.className = 'vk-btn space-row-btn';
-                    spaceBtn.style.flex = 2; // 70% roughly
+                    spaceBtn.style.flex = 2;
                     spaceBtn.innerText = 'SPACE';
-                    spaceBtn.onclick = () => inputElement.value += ' ';
+                    spaceBtn.onclick = () => {
+                        let val = inputElement.value || '';
+                        inputElement.value = val + ' ';
+                    };
                     
                     const submitBtn = document.createElement('button');
                     submitBtn.className = 'vk-btn space-row-btn submit-key';
-                    submitBtn.style.flex = 1; // 30% roughly
+                    submitBtn.style.flex = 1;
                     submitBtn.innerText = 'Kirim';
-                    submitBtn.onclick = submitCallback;
+                    submitBtn.onclick = () => {
+                        // DELEGATE TO HIDDEN BUTTON to ensure context consistency (esp 'correct' answer via closure)
+                        const ansDiv = container.parentElement;
+                         const hiddenBtn = ansDiv.querySelector('.btn-capsule');
+                         if(hiddenBtn) hiddenBtn.click();
+                    };
 
                     spaceRow.appendChild(spaceBtn);
                     spaceRow.appendChild(submitBtn);
                     container.appendChild(spaceRow);
                 };
 
-                // Initial Render
                 renderKeys();
             }
 
             handleAnswer(team, element, selected, correct) {
                 if (!this.state.isPlaying) return;
                 
+                // Prevent Double Submission (Race Condition Fix)
+                if (this.state[team].processingAnswer) return;
+                
                 const q = (team === 'red' ? window.gameData.questionsRed : window.gameData.questionsBlue)[this.state[team].index];
                 const type = q.question_type || 'multiple_choice';
+                
+                // Set Processing Flag immediately
+                this.state[team].processingAnswer = true;
+                
                 let isCorrect = false;
 
                 // Validation
@@ -1232,7 +1326,7 @@
                      const goalSet = new Set(correctKeys.map(s => String(s).trim().toUpperCase()));
                      
                      // Compare Sets
-                     console.log('[PGC Debug] User:', [...userSet], 'Goal:', [...goalSet]);
+                     // console.log('[PGC Debug] User:', [...userSet], 'Goal:', [...goalSet]);
                      if (userSet.size === goalSet.size) isCorrect = [...userSet].every(key => goalSet.has(key));
                 }
 
@@ -1297,6 +1391,8 @@
 
                 setTimeout(() => {
                     this.state[team].index++;
+                    // Release Processing Flag
+                    this.state[team].processingAnswer = false;
                     this.renderQuestion(team);
                 }, 1500);
             }

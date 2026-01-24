@@ -87,3 +87,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::post('tournaments/matches/{match}/configure', [\App\Http\Controllers\Admin\TournamentController::class, 'configureMatch'])->name('tournaments.matches.configure');
     Route::resource('tournaments', \App\Http\Controllers\Admin\TournamentController::class);
 });
+
+// Cache Clearing Helper Route (Temporary)
+Route::get('/fix-cache-now', function() {
+    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+    return "Cache cleared successfully! <br>" . nl2br(\Illuminate\Support\Facades\Artisan::output());
+});

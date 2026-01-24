@@ -148,18 +148,46 @@
 
 <!-- SCOREBOARD -->
 <div class="m-scoreboard">
-    <div style="text-align: center;">
-        <div class="m-team-name">{{ $session->team_red_name }}</div>
-        <div class="m-score-val red">{{ $session->team_red_score }}</div>
-        @if($session->winner_team === 'red') <div style="font-size:1.2rem;">🏆</div> @endif
+    <!-- TIM MERAH -->
+    <div style="display: flex; align-items: center; justify-content: center;">
+        <!-- Left Side: Trophy or Spacer -->
+        <div style="width: 50px; display: flex; justify-content: flex-end; padding-right: 10px;">
+             @if($session->winner_team === 'red') <div style="font-size:1.8rem; animation: bounce 1s infinite;">🏆</div> @endif
+        </div>
+        
+        <!-- Center: Text -->
+        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px;">
+            <div class="m-team-name">{{ $session->team_red_name }}</div>
+            <div class="m-score-val red">{{ $session->team_red_score }}</div>
+        </div>
+
+        <!-- Right Side: Spacer (Balance) -->
+        <div style="width: 50px;"></div>
     </div>
+
+    <!-- VS -->
     <div style="font-size: 1.5rem; font-weight: 800; color: #FFD8A8;">VS</div>
-    <div style="text-align: center;">
-        <div class="m-team-name">{{ $session->team_blue_name }}</div>
-        <div class="m-score-val blue">{{ $session->team_blue_score }}</div>
-        @if($session->winner_team === 'blue') <div style="font-size:1.2rem;">🏆</div> @endif
+
+    <!-- TIM BIRU -->
+    <div style="display: flex; align-items: center; justify-content: center;">
+        <!-- Left Side: Spacer (Balance) -->
+        <div style="width: 50px;"></div>
+
+        <!-- Center: Text -->
+        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px;">
+            <div class="m-team-name">{{ $session->team_blue_name }}</div>
+            <div class="m-score-val blue">{{ $session->team_blue_score }}</div>
+        </div>
+
+        <!-- Right Side: Trophy or Spacer -->
+        <div style="width: 50px; display: flex; justify-content: flex-start; padding-left: 10px;">
+            @if($session->winner_team === 'blue') <div style="font-size:1.8rem; animation: bounce 1s infinite;">🏆</div> @endif
+        </div>
     </div>
 </div>
+<style>
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+</style>
 
 @if($rounds->isEmpty())
     <div style="text-align:center; padding:3rem; color:#94A3B8;">
