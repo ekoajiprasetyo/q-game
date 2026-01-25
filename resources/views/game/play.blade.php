@@ -83,13 +83,14 @@
         @keyframes float { to { transform: translate(30px, 50px) scale(1.1); } }
 
         #game-container {
-            position: absolute; top: 0; left: 0; width: 100%; height: 35%; /* Phaser takes top 35% */
+            position: absolute; top: 0; left: 0; width: 100%; height: 30%; /* Balanced: 30% */
             z-index: 1; 
         }
         
-        /* UI Layer - takes BOTTOM 65% */
+        /* UI Layer - takes BOTTOM 70% */
         #ui-layer {
-            position: absolute; top: 35%; left: 0; width: 100%; height: 65%;
+            position: absolute; top: 30%; /* Matches game-container height */
+            left: 0; width: 100%; height: 70%; /* Balanced space */
             z-index: 10; 
             display: flex;
             pointer-events: none; 
@@ -116,44 +117,58 @@
         .hud-container {
             position: absolute; top: 0; width: 100%; height: 100px;
             z-index: 50;
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: flex-start;
-            padding-top: 0;
+            display: flex; justify-content: center; /* Only centers Timer */
             pointer-events: none;
         }
-        
-        /* Center scores in their respective grid cells */
-        .hud-container > .score-pill { justify-self: center; }
-        .hud-container > .timer-box { justify-self: center; }
 
-        /* Timer in Middle */
+        /* Timer in Middle Top */
         .timer-box {
-            background: rgba(255,255,255,0.85); padding: 5px 30px 10px 30px;
-            border-radius: 0 0 25px 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.95); padding: 5px 0; 
+            width: 160px; /* Increased Width for larger font */
+            border-radius: 0 0 24px 24px; box-shadow: 0 6px 20px rgba(0,0,0,0.12);
             text-align: center; border-top: 6px solid #FF9B50;
-            position: relative; top: 0;
+            position: relative;
             z-index: 52;
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .timer-val { font-size: 24px; font-weight: 800; color: var(--text-main); line-height: 1; }
-        .timer-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #9CA3AF; }
+        .timer-val { 
+            font-size: 34px; font-weight: 900; color: var(--text-main); /* Larger & Bolder */
+            line-height: 1.1; margin-bottom: 0;
+            font-variant-numeric: tabular-nums; /* Keeps numbers stable width without ugly font */
+            letter-spacing: -1px;
+        }
+        .timer-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #9CA3AF; font-weight: 700; margin-top: 2px; }
 
-        /* Scores Flanking Timer */
+        /* Scores Moved to Safe Zone (Bottom of Game Area) */
         .score-pill {
-            background: rgba(255,255,255,0.85); border-radius: 0 0 20px 20px;
-            padding: 10px 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: fixed; /* Fixed relative to screen */
+            background: rgba(255,255,255,0.98); 
+            border-radius: 20px; /* Larger radius */
+            padding: 12px 30px; /* Larger padding */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             text-align: center;
-            min-width: 120px;
-            top: 0; position: relative;
+            min-width: 110px; /* Wider */
+            top: 18vh; 
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            z-index: 80;
+            display: flex; flex-direction: column; justify-content: center;
+            transform: scale(1.1); /* General scale up */
         }
-        .score-val { font-size: 36px; font-weight: 900; line-height: 1; }
-        .score-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+        .score-val { font-size: 42px; font-weight: 900; line-height: 1; margin: 4px 0; white-space: nowrap; }
+        .score-label { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8; }
         
-        .color-red { color: var(--red-team); border-top: 4px solid var(--red-team); }
-        .color-blue { color: var(--blue-team); border-top: 4px solid var(--blue-team); }
+        /* Specific Positions */
+        .color-red { 
+            left: 20px; 
+            color: var(--red-team); 
+            border: 2px solid #FEE2E2; border-bottom: 4px solid #FEE2E2; 
+        }
+        .color-blue { 
+            right: 20px; 
+            color: var(--blue-team); 
+            border: 2px solid #DBEAFE; border-bottom: 4px solid #DBEAFE; 
+        }
 
         .btn-control {
             position: absolute; top: 20px; left: 20px;
@@ -170,36 +185,84 @@
             border-radius: 24px; padding: 20px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.08);
             border: 1px solid rgba(255,255,255,0.6);
-            width: 100%; max-width: 550px; align-self: center;
+            width: 100%; max-width: 600px; /* Increased max width */
+            align-self: center;
             transform: translateY(0); opacity: 1;
+            display: flex; flex-direction: column; /* Default */
+            transition: all 0.3s ease;
+        }
+
+        /* Mode Grid (Active when image present or content long) */
+        .question-card.grid-mode {
+            max-width: 900px; /* Allow wider card */
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
         }
         
         .q-content {
             display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;
+            width: 100%;
         }
+        
+        /* In Grid Mode, q-content is Left Column */
+        .question-card.grid-mode .q-content {
+            margin-bottom: 0;
+            padding-right: 18px; /* Increased padding */
+            border-right: 2px solid rgba(0,0,0,0.05); /* Thicker separator */
+            max-height: 450px; overflow-y: auto; /* Taller scroll area */
+            display: flex; flex-direction: column; justify-content: center; /* Center content vertically too */
+        }
+        
+        /* In Grid Mode, Answer Area is Right Column */
+        .question-card.grid-mode .answer-area-wrapper {
+             display: flex; flex-direction: column; justify-content: center; /* Vertically center keyboard */
+             height: 100%; /* Match height of q-content */
+        }
+
         .q-img-wrapper {
             width: 100%; display: flex; justify-content: center;
             border-radius: 12px; overflow: hidden; background: #f3f4f6;
             display: none; /* JS will toggle */
+            margin-bottom: 10px;
         }
         .q-img { max-height: 150px; max-width: 100%; object-fit: contain; }
+        
+        /* Grid Mode Image Sizing - MAXIMIZED */
+        .question-card.grid-mode .q-img { 
+            max-height: 400px; /* Maximum Layout Height */
+            width: 100%;       /* Force Full Width */
+            object-fit: contain; /* Ensure full image visible */
+            background: rgba(0,0,0,0.02); /* Subtle contrast */
+        }
+        
+        .question-card.grid-mode .q-img-wrapper {
+             background: transparent; 
+             margin-bottom: 20px;
+             width: 100%; display: flex; justify-content: center;
+        }
 
         .q-text {
             font-size: 16px; font-weight: 500; color: var(--text-main);
-            line-height: 1.05;
-            /* text-align inherited from editor inline styles */
+            line-height: 1.35;
         }
-        /* Rich Text Content Styling - Zero spacing */
+        /* Rich Text Content Styling */
         .q-text * { margin: 0; padding: 0; }
         .q-text p { margin: 0 !important; }
-        .q-text p:empty, .q-text br { display: block; content: ' '; min-height: 1em; } /* Allow line breaks */
+        .q-text p:empty, .q-text br { display: block; content: ' '; min-height: 1em; } 
         .q-text b, .q-text strong { font-weight: 700; }
         .q-text img { 
-            max-width: 100%; max-height: 200px; 
-            border-radius: 8px; object-fit: contain;
-            margin: 2px 0 !important;
-            vertical-align: middle;
-            display: inline-block;
+            max-width: 100%; 
+            max-height: 450px; 
+            width: auto !important;  /* Reset to natural width (fixes aspect ratio) */
+            height: auto !important; /* Reset to natural height (fixes aspect ratio) */
+            
+            border-radius: 8px; 
+            object-fit: contain;
+            
+            display: block;          /* Own line */
+            margin: 10px auto !important; /* Center horizontally */
         }
         .q-text ul, .q-text ol { padding-left: 1.2em !important; margin: 2px 0 !important; }
         .q-text li { margin: 1px 0 !important; }
@@ -529,6 +592,11 @@
         #winner-text { font-size: 28px; font-weight: 900; color: #F59E0B; text-transform: uppercase; line-height: 1.2; }
         
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        
+        @keyframes toastSlideIn {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
 
         .final-scores {
             display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 30px;
@@ -620,13 +688,13 @@
             }
 
             preload() {
-                this.load.image('char', '/assets/images/character.png');
+                this.load.image('char', '/assets/images/character_new.png');
             }
 
             create() {
                 const w = this.scale.width;
                 const h = this.scale.height;
-                const cy = h * 0.68; // Adjusted position
+                const cy = h * 0.65; // Raised slightly to prevent clipping
 
                 // Static Center Line (Vertical dashed line only)
                 const line = this.add.graphics();
@@ -643,7 +711,7 @@
                 // MAIN SPRITE (Contains both teams pulling)
                 this.mainChar = this.add.sprite(w / 2, cy, 'char');
                 this.mainChar.setOrigin(0.5, 0.5);
-                this.mainChar.setScale(0.24);
+                this.mainChar.setScale(0.22); // Slightly larger
 
                 // Initial Position
                 this.updatePosition();
@@ -652,7 +720,7 @@
             pull(team) {
                 if(this.gameOver) return;
 
-                const force = 30; // Movement per correct answer
+                const force = 20; // Movement per correct answer
                 
                 // Red pulls to Left (-), Blue pulls to Right (+)
                 if (team === 'red') this.tugOffset -= force;
@@ -663,12 +731,12 @@
             }
 
             checkWinCondition() {
-                // If sprite moves too far Left (-250), Red Wins
-                if (this.tugOffset <= -250) {
+                // If sprite moves too far Left (-200), Red Wins
+                if (this.tugOffset <= -200) {
                     this.finishGame('red');
                 }
-                // If sprite moves too far Right (+250), Blue Wins
-                else if (this.tugOffset >= 250) {
+                // If sprite moves too far Right (+200), Blue Wins
+                else if (this.tugOffset >= 200) {
                     this.finishGame('blue');
                 }
             }
@@ -774,35 +842,41 @@
                 const set = team === 'red' ? data.questionsRed : data.questionsBlue;
                 const state = this.state[team];
                 
-                const qDiv = document.getElementById(`q-text-${team}`);
+                // Get DOM Elements
+                const cardElement = document.getElementById(`q-card-${team}`);
+                const qText = document.getElementById(`q-text-${team}`);
                 const ansDiv = document.getElementById(`ans-grid-${team}`);
                 const imgWrapper = document.getElementById(`img-wrapper-${team}`);
                 const imgEl = document.getElementById(`img-${team}`);
                 
-                // Cleanup PGC Button if exists (Fix for persisting button)
-                const cardEl = document.getElementById(`q-card-${team}`);
-                const oldBtn = cardEl ? cardEl.querySelector('.pgc-submit-btn') : null;
-                if(oldBtn) oldBtn.remove();
+                // Cleanup PGC Button if exists
+                if(cardElement) {
+                    const oldBtn = cardElement.querySelector('.pgc-submit-btn');
+                    if(oldBtn) oldBtn.remove();
+                }
                 
+                // 1. Check Data Availability
                 if (!set || set.length === 0) {
-                    qDiv.innerText = "No Data"; return;
+                    if(qText) qText.innerText = "No Data";
+                    return;
                 }
 
+                // 2. Check Game Over / Finished State
                 if (state.index >= set.length) {
-                    qDiv.innerText = "Selesai! Menunggu lawan...";
-                    ansDiv.innerHTML = "";
-                    imgWrapper.style.display = 'none';
+                    if(qText) qText.innerText = "Selesai! Menunggu lawan...";
+                    if(ansDiv) ansDiv.innerHTML = "";
+                    if(imgWrapper) imgWrapper.style.display = 'none';
                     state.finished = true;
                     state.finishedAt = Date.now();
 
-                    // 1. Check for Perfect Score & Fastest Win
+                    // Check for Perfect Score & Fastest Win
                     const maxScore = set.reduce((acc, curr) => acc + (curr.points || 10), 0);
                     if (state.score >= maxScore) {
                         this.showGameOver(team, 'Menang Sempurna & Tercepat!');
                         return;
                     }
 
-                    // 2. Check if BOTH finished (Standard End)
+                    // Check if BOTH finished
                     if (this.state.red.finished && this.state.blue.finished) {
                         this.showGameOver(null, 'Semua Soal Terjawab!');
                     }
@@ -811,34 +885,52 @@
 
                 const q = set[state.index];
                 
-                // --- RENDER TEXT (HTML + KaTeX Support) ---
-                qDiv.innerHTML = q.question_text || "Error"; 
+                // 3. AUTO LAYOUT LOGIC (Grid Mode)
+                const hasImage = !!q.image_url;
+                const isLongText = q.question_text && q.question_text.length > 150; // Lower threshold to 150
+                const type = q.question_type || 'multiple_choice';
+                const isInputType = type === 'short_answer' || type === 'isian_singkat';
+
+                if (cardElement) {
+                    // Force Grid Mode if: Image exists, Long Text, OR Input Type (Keyboard needs space)
+                    if (hasImage || isLongText || isInputType) {
+                        cardElement.classList.add('grid-mode');
+                    } else {
+                        cardElement.classList.remove('grid-mode');
+                    }
+                }
                 
-                // --- RENDER IMAGE ---
-                // Logic to handle multiple path formats
+                // Utility class for CSS targeting
+                if(ansDiv) ansDiv.classList.add('answer-area-wrapper');
+
+                // 4. RENDER TEXT
+                if(qText) qText.innerHTML = q.question_text || "Error"; 
+                
+                // 5. RENDER IMAGE
                 if (q.image_url) {
                     let src = q.image_url;
                     if (!src.startsWith('http') && !src.startsWith('/')) {
-                        // Assume relative path in storage
                         src = "/storage/" + src;
                     }
-                    imgEl.src = src;
-                    imgWrapper.style.display = 'flex';
-                    
-                    // Simple Error fallback
-                    imgEl.onerror = () => { imgWrapper.style.display = 'none'; };
+                    if(imgEl) {
+                        imgEl.src = src;
+                        imgEl.onerror = () => { if(imgWrapper) imgWrapper.style.display = 'none'; };
+                    }
+                    if(imgWrapper) imgWrapper.style.display = 'flex';
                 } else {
-                    imgWrapper.style.display = 'none';
+                    if(imgWrapper) imgWrapper.style.display = 'none';
                 }
 
-                // --- RENDER ANSWERS ---
+                // 6. RENDER ANSWERS
+                if(!ansDiv) return;
                 ansDiv.innerHTML = '';
-                // Revert to GRID 2 Columns for space saving
+                
+                // Reset Grid Style
                 ansDiv.style.display = 'grid';
                 ansDiv.style.gridTemplateColumns = '1fr 1fr';
                 ansDiv.style.gap = '8px';
 
-                const type = q.question_type || 'multiple_choice';
+                // const type = q.question_type || 'multiple_choice'; // Removed duplicate declaration
 
                 if (type === 'multiple_choice' || type === 'pilihan_ganda') {
                     let choices = [];
@@ -848,28 +940,17 @@
                          choices = Object.keys(q.options).map(k => ({ key: k, text: q.options[k] }));
                     }
                     
-                    // Poin 3: Acak Pilihan
                     choices.sort(() => Math.random() - 0.5);
 
                     choices.forEach((opt, idx) => {
                         const btn = document.createElement('button');
-                        // Poin 4: Tombol Berwarna
                         btn.className = `ans-btn btn-opt-${idx % 4}`;
-                        
-                        // Poin 1: Hilangkan Huruf A, B, C
-                        // Poin 2: Align Left (via CSS)
-                        // Use innerHTML for rich text & KaTeX
                         btn.innerHTML = opt.text || opt.value;
-
                         btn.onclick = () => this.handleAnswer(team, btn, opt.key || opt.id, q.correct_answer);
                         ansDiv.appendChild(btn);
                     });
 
                 } else if (type === 'true_false' || type === 'benar_salah') {
-                    // True False layout can remain side-by-side or vertical. Vertical is consistent.
-                    ansDiv.style.display = 'grid';
-                    ansDiv.style.gridTemplateColumns = '1fr 1fr';
-                    
                     const opts = [
                         { key: 'true', text: 'BENAR', cls: 'btn-opt-true' }, 
                         { key: 'false', text: 'SALAH', cls: 'btn-opt-false' } 
@@ -884,45 +965,67 @@
                         ansDiv.appendChild(btn);
                     });
 
-
-
                 } else if (type === 'short_answer' || type === 'isian_singkat') {
                     ansDiv.style.display = 'flex';
                     ansDiv.style.flexDirection = 'column';
                     ansDiv.style.gap = '8px';
 
-                    // === OPTIMIZATION FOR IFP / MULTI-TOUCH ===
-                    // Instead of a real <input> that steals focus, we use a DIV "Fake Input".
-                    // This allows both players to "type" simultaneously without browser focus conflicts.
-                    
                     const input = document.createElement('div');
                     input.className = 'short-answer-display active';
-                    input.dataset.val = ''; // Internal storage
+                    input.dataset.val = ''; 
                     
-                    // Add Cursor
                     const cursor = document.createElement('span');
                     cursor.className = 'cursor-blink';
                     input.appendChild(cursor);
 
-                    // Polyfill .value property so existing keyboard/submit logic works seamlessly
+                    // Helper to toggle submit button state
+                    const updateSubmitState = (val) => {
+                        const hasVal = val && val.trim().length > 0;
+                        // Find buttons in numpad/keyboard if they exist
+                        const numpadOk = keyboardContainer.querySelector('.vk-btn-ok');
+                        const kbSubmit = keyboardContainer.querySelector('.vk-btn-submit');
+                        
+                        [numpadOk, kbSubmit].forEach(b => {
+                            if(b) {
+                                if(hasVal) {
+                                    b.style.opacity = '1';
+                                    b.style.background = '#10B981';
+                                    b.dataset.disabled = 'false';
+                                } else {
+                                    b.style.opacity = '0.5';
+                                    b.style.background = '#9CA3AF';
+                                    b.dataset.disabled = 'true';
+                                }
+                            }
+                        });
+                    };
+
                     Object.defineProperty(input, 'value', {
                         get() { return this.dataset.val; },
                         set(v) {
-                            if(this.disabled) return; // Stop typing if disabled
+                            if(this.disabled) return; 
                             this.dataset.val = v;
                             this.innerText = v;
                             this.appendChild(cursor);
+                            updateSubmitState(v);
                         }
                     });
-                    
-                    // Polyfill .disabled for styling logic
+
+                    // Prevent native keyboard on click
+                    input.onclick = (e) => {
+                        e.preventDefault();
+                        if(!input.classList.contains('disabled')) {
+                            input.style.borderColor = 'var(--orange-btn)';
+                        }
+                    };
+
                     Object.defineProperty(input, 'disabled', {
                         get() { return this.classList.contains('disabled'); },
                         set(v) {
                             if(v) {
                                 this.classList.add('disabled');
                                 this.classList.remove('active');
-                                if(cursor.parentNode === this) this.removeChild(cursor); // Remove cursor when disabled
+                                if(cursor.parentNode === this) this.removeChild(cursor);
                             } else {
                                 this.classList.remove('disabled');
                                 this.classList.add('active');
@@ -931,41 +1034,29 @@
                         }
                     });
 
-                    // Optional: Tap to "focus" (just visual feedback)
-                    input.onclick = () => {
-                        // Could add a pulse effect or ensure it's "active"
-                    };
-
                     const keyboardContainer = document.createElement('div');
-                    
+
                     const btn = document.createElement('button');
                     btn.innerText = 'Kirim Jawaban';
-                    btn.className = 'btn-capsule'; // Orange Capsule
+                    btn.className = 'btn-capsule'; 
                     btn.onclick = () => {
                         this.handleAnswer(team, input, input.value, q.correct_answer); 
                     };
 
                     ansDiv.appendChild(input);
                     ansDiv.appendChild(keyboardContainer);
-                    ansDiv.appendChild(btn); // Append first, might hide later
+                    ansDiv.appendChild(btn); 
 
                     const isNumeric = /^\d+$/.test(q.correct_answer || '');
                     if (isNumeric) {
-                        // Poin 7: Hilangkan tombol kirim jika numpad
                         btn.classList.add('hidden');
                         this.renderNumpad(keyboardContainer, input);
                     } else {
-                        // Poin 8: Keyboard dengan tombol kirim di space row
-                        btn.classList.add('hidden'); // Hide main button, use embedded one
+                        btn.classList.add('hidden');
                         this.renderFullKeyboard(keyboardContainer, input, () => this.handleAnswer(team, input, input.value, q.correct_answer));
                     }
 
                 } else if (type === 'multiple_answer' || type === 'pilihan_ganda_kompleks') {
-                    // 1. Grid Layout for consistency
-                    ansDiv.style.display = 'grid';
-                    ansDiv.style.gridTemplateColumns = '1fr 1fr';
-                    ansDiv.style.gap = '8px';
-
                     let choices = [];
                     if (q.options && q.options.choices) {
                         choices = q.options.choices;
@@ -973,15 +1064,12 @@
                         choices = q.options;
                     }
 
-                    // 2. Shuffle functionality (Randomize)
                     choices = [...choices].sort(() => Math.random() - 0.5);
 
                     const selectedKeys = new Set();
-                    const choiceBtns = []; // Track buttons to update UI
 
                     choices.forEach((opt, idx) => {
                         const wrapper = document.createElement('button');
-                        // Use base ans-btn class for consistent shape/hover
                         wrapper.className = `ans-btn btn-opt-${idx % 4}`; 
                         wrapper.style.display = 'flex';
                         wrapper.style.alignItems = 'center';
@@ -991,8 +1079,6 @@
                         wrapper.style.position = 'relative';
                         wrapper.style.transition = 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
                         
-                        // 3. Modern Checkbox UI (Icon based)
-                        // Inactive State Icon
                         const iconSpan = document.createElement('span');
                         iconSpan.innerHTML = feather.icons['square'].toSvg({ width: 20, height: 20, "stroke-width": 2.5 });
                         iconSpan.style.opacity = '0.6';
@@ -1002,12 +1088,10 @@
                         lbl.style.flex = 1;
                         lbl.style.fontWeight = '600';
 
-                        // 2. Click Anywhere Logic
                         wrapper.onclick = () => {
                             const key = opt.key;
                             if (selectedKeys.has(key)) {
                                 selectedKeys.delete(key);
-                                // Revert UI
                                 wrapper.style.transform = 'none';
                                 wrapper.style.filter = 'none';
                                 wrapper.style.boxShadow = '0 4px 0 rgba(0,0,0,0.1)';
@@ -1016,14 +1100,11 @@
                                 iconSpan.style.opacity = '0.6';
                             } else {
                                 selectedKeys.add(key);
-                                // Active/Selected UI
                                 wrapper.style.transform = 'translateY(2px)';
                                 wrapper.style.filter = 'brightness(0.95)';
                                 wrapper.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.1)';
-                                
-                                // Change Icon to Checked
                                 iconSpan.innerHTML = feather.icons['check-square'].toSvg({ width: 22, height: 22, "stroke-width": 3 });
-                                iconSpan.style.color = '#10B981'; // Success Green
+                                iconSpan.style.color = '#10B981'; 
                                 iconSpan.style.opacity = '1';
                             }
                         };
@@ -1031,45 +1112,37 @@
                         wrapper.appendChild(iconSpan);
                         wrapper.appendChild(lbl);
                         ansDiv.appendChild(wrapper);
-                        choiceBtns.push({ key: opt.key, el: wrapper });
                     });
 
-                    // 4. Submit Button - Append to CARD (not grid) for reliable clicks
-                    const cardEl = document.getElementById(`q-card-${team}`);
-                    
-                    // Remove old submit button if exists
-                    const oldBtn = cardEl.querySelector('.pgc-submit-btn');
-                    if(oldBtn) oldBtn.remove();
-                    
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.className = 'pgc-submit-btn';
-                    btn.innerHTML = 'Kirim'; 
-                    
-                    // Inline Styles for reliability
-                    btn.style.cssText = `
-                        display: block; width: 100%; margin-top: 15px; padding: 14px 20px;
-                        background: linear-gradient(135deg, #10B981, #059669); color: white;
-                        border: none; border-radius: 12px; font-size: 16px; font-weight: 700;
-                        cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-                        transition: all 0.2s; position: relative; z-index: 50;
-                    `;
-                    
-                    btn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        this.handleAnswer(team, btn, Array.from(selectedKeys), q.correct_answer || q.options.correct_answers);
-                    });
-                    
-                    btn.addEventListener('mouseenter', () => { btn.style.transform = 'translateY(-2px)'; btn.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.5)'; });
-                    btn.addEventListener('mouseleave', () => { btn.style.transform = 'none'; btn.style.boxShadow = '0 4px 15px rgba(16, 185, 129, 0.4)'; });
+                    // Reuse cardElement from top scope to append button
+                    if (cardElement) {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'pgc-submit-btn';
+                        btn.innerHTML = 'Kirim'; 
+                        
+                        btn.style.cssText = `
+                            display: block; width: 100%; margin-top: 15px; padding: 14px 20px;
+                            background: linear-gradient(135deg, #10B981, #059669); color: white;
+                            border: none; border-radius: 12px; font-size: 16px; font-weight: 700;
+                            cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+                            transition: all 0.2s; position: relative; z-index: 50;
+                        `;
+                        
+                        btn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            this.handleAnswer(team, btn, Array.from(selectedKeys), q.correct_answer || q.options.correct_answers);
+                        });
+                        
+                        btn.addEventListener('mouseenter', () => { btn.style.transform = 'translateY(-2px)'; btn.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.5)'; });
+                        btn.addEventListener('mouseleave', () => { btn.style.transform = 'none'; btn.style.boxShadow = '0 4px 15px rgba(16, 185, 129, 0.4)'; });
 
-                    cardEl.appendChild(btn);
+                        cardElement.appendChild(btn);
+                    }
                 }
 
-                // --- RENDER KATEX MATH FORMULAS ---
-                // Render LaTeX formulas after content is loaded
-                const cardElement = document.getElementById(`q-card-${team}`);
+                // 7. RENDER KATEX MATH FORMULAS
                 if (typeof renderMathInElement === 'function' && cardElement) {
                     renderMathInElement(cardElement, {
                         delimiters: [
@@ -1092,9 +1165,23 @@
                     btn.className = 'vk-btn';
                     btn.innerText = key;
                     if(key === 'OK') {
-                        btn.style.background = '#10B981'; btn.style.color = 'white';
-                        // Logic OK directly submits
+                        btn.className += ' vk-btn-ok'; // Marker class
+                        btn.style.background = '#9CA3AF'; // Start disabled
+                        btn.style.opacity = '0.5';
+                        btn.style.color = 'white';
+                        btn.dataset.disabled = 'true';
+                        
                         btn.onclick = () => { 
+                            if(btn.dataset.disabled === 'true') {
+                                // Show Toast
+                                const t = document.createElement('div');
+                                t.innerText = 'Jawaban belum diisi!';
+                                t.style.cssText = 'position:fixed; top:20px; right:20px; background:rgba(220, 38, 38, 0.9); color:white; padding:12px 24px; border-radius:12px; z-index:9999; font-weight:600; box-shadow: 0 4px 12px rgba(0,0,0,0.2); animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; display:flex; align-items:center; gap:8px;';
+                                t.innerHTML = '<span>⚠️</span> Jawaban belum diisi!';
+                                document.body.appendChild(t);
+                                setTimeout(() => t.remove(), 2000);
+                                return;
+                            } 
                              // Call logic directly using the shimmed value
                              this.handleAnswer(
                                  // Infer team from container ID or passed context? 
@@ -1241,10 +1328,22 @@
                     };
                     
                     const submitBtn = document.createElement('button');
-                    submitBtn.className = 'vk-btn space-row-btn submit-key';
+                    submitBtn.className = 'vk-btn space-row-btn submit-key vk-btn-submit'; // Marker class
                     submitBtn.style.flex = 1;
+                    submitBtn.style.background = '#9CA3AF'; // Start disabled
+                    submitBtn.style.opacity = '0.5';
+                    submitBtn.dataset.disabled = 'true';
                     submitBtn.innerText = 'Kirim';
                     submitBtn.onclick = () => {
+                        if(submitBtn.dataset.disabled === 'true') {
+                             const t = document.createElement('div');
+                             t.innerText = 'Jawaban belum diisi!';
+                             t.style.cssText = 'position:fixed; top:20px; right:20px; background:rgba(220, 38, 38, 0.9); color:white; padding:12px 24px; border-radius:12px; z-index:9999; font-weight:600; box-shadow: 0 4px 12px rgba(0,0,0,0.2); animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; display:flex; align-items:center; gap:8px;';
+                             t.innerHTML = '<span>⚠️</span> Jawaban belum diisi!';
+                             document.body.appendChild(t);
+                             setTimeout(() => t.remove(), 2000);
+                             return;
+                        }
                         // DELEGATE TO HIDDEN BUTTON to ensure context consistency (esp 'correct' answer via closure)
                         const ansDiv = container.parentElement;
                          const hiddenBtn = ansDiv.querySelector('.btn-capsule');
