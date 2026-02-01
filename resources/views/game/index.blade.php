@@ -136,8 +136,8 @@
         <button id="btn-fullscreen" class="btn-icon-orange" onclick="toggleFullscreen()" title="Fullscreen">
             <i data-feather="maximize"></i>
         </button>
-        <!-- Add data-turbo="false" to Login because it's distinct flow usually -->
-        <a href="{{ route('login') }}" class="btn-login" data-turbo="false">
+        <!-- Arahkan ke Dashboard. Middleware akan handle redirect jika belum login, atau langsung masuk jika sudah login (SSO) -->
+        <a href="{{ route('admin.dashboard') }}" class="btn-login" data-turbo="false">
             <i data-feather="lock"></i>
             <span>Login Guru</span>
         </a>
@@ -166,6 +166,16 @@
         <i data-feather="chevrons-up"></i>
         <span style="font-size: 14px; font-weight: 500;">Sentuh tombol di atas untuk memulai</span>
     </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none;"></div>
+
+    @if(session('error'))
+        <div id="flash-error" data-message="{{ session('error') }}" style="display: none;"></div>
+    @endif
+    @if(session('success'))
+        <div id="flash-success" data-message="{{ session('success') }}" style="display: none;"></div>
+    @endif
 
     <script>
         // --- GLOBAL HELPER DEFINITIONS (Run Once) ---
@@ -197,6 +207,57 @@
                     
                     // CRITICAL: Replace feather icons immediately after modifying DOM
                     if (typeof feather !== 'undefined') feather.replace();
+                },
+
+                showToast: function(message, type = 'error') {
+                    const container = document.getElementById('toast-container');
+                    if (!container) return;
+
+                    const toast = document.createElement('div');
+                    const bgColor = type === 'error' ? '#EF4444' : '#10B981';
+                    const icon = type === 'error' ? 'alert-circle' : 'check-circle';
+                    
+                    toast.style.cssText = `
+                        background: ${bgColor};
+                        color: white;
+                        padding: 12px 20px;
+                        border-radius: 12px;
+                        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        font-weight: 500;
+                        font-size: 14px;
+                        opacity: 0;
+                        transform: translateY(-20px);
+                        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+                        pointer-events: auto;
+                        min-width: 300px;
+                        justify-content: center;
+                    `;
+                    
+                    toast.innerHTML = `
+                        <i data-feather="${icon}" style="width: 18px; height: 18px;"></i>
+                        <span>${message}</span>
+                    `;
+                    
+                    container.appendChild(toast);
+                    
+                    // Render icon
+                    if (typeof feather !== 'undefined') feather.replace();
+                    
+                    // Animate In
+                    requestAnimationFrame(() => {
+                        toast.style.opacity = '1';
+                        toast.style.transform = 'translateY(0)';
+                    });
+                    
+                    // Animate Out
+                    setTimeout(() => {
+                        toast.style.opacity = '0';
+                        toast.style.transform = 'translateY(-20px)';
+                        setTimeout(() => toast.remove(), 300);
+                    }, 4000);
                 }
             };
 
@@ -220,6 +281,16 @@
 
             // 2. Sync Fullscreen Icon State
             window.gameHelpers.updateFullscreenIcon('btn-fullscreen');
+
+            // 3. Check for Flash Messages
+            const errorFlash = document.getElementById('flash-error');
+            if (errorFlash) {
+                window.gameHelpers.showToast(errorFlash.dataset.message, 'error');
+            }
+            const successFlash = document.getElementById('flash-success');
+            if (successFlash) {
+                window.gameHelpers.showToast(successFlash.dataset.message, 'success');
+            }
         });
 
         // Expose toggle function to global scope for onclick attributes if needed

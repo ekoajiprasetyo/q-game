@@ -11,6 +11,12 @@ class Tournament extends Model
 {
     use HasFactory;
 
+    /**
+     * The table associated with the model.
+     * RENAMED to avoid conflict
+     */
+    protected $table = 'game_tournaments';
+
     protected $fillable = [
         'title',
         'description',
@@ -26,11 +32,16 @@ class Tournament extends Model
 
     public function teams()
     {
-        return $this->hasMany(TournamentTeam::class);
+        return $this->hasMany(TournamentTeam::class, 'tournament_id');
     }
 
     public function matches()
     {
-        return $this->hasMany(TournamentMatch::class);
+        return $this->hasMany(TournamentMatch::class, 'tournament_id');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

@@ -50,7 +50,8 @@ Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:5
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Admin routes (protected)
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+// Tambahkan middleware 'role:admin,guru' agar siswa TIDAK BISA AKSES sama sekali
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,guru'])->group(function () {
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 

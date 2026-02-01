@@ -2,38 +2,49 @@
 
 Dokumen ini berisi langkah-langkah untuk mengupload dan mengkonfigurasi aplikasi Q-Game di hosting cPanel/Shared Hosting.
 
-## 1. Persiapan File (Di Komputer Lokal)
+> **PENTING**: Q-Game terintegrasi dengan database Q-Link. Lihat [INTEGRATION_GUIDE.md](./INTEGRATION_GUIDE.md) untuk detail teknis.
 
-Saya telah menyiapkan script untuk membuat paket deployment. Jalankan perintah berikut di terminal (jika belum):
-`./prepare_package.ps1` (Akan saya buatkan script ini).
+## 1. Persiapan (Komputer Lokal)
 
-Ini akan membuat file `q-game-deployment.zip` yang bersih (tanpa folder development yang tidak perlu).
+### Build Assets Frontend
+```powershell
+npm run build
+```
 
-## 2. Persiapan Database (Di cPanel)
+### Buat Paket Deployment
+Jalankan script berikut untuk membuat file zip yang siap upload:
+```powershell
+./prepare_package.ps1
+```
+Ini akan membuat file `q-game-deployment.zip` yang bersih.
 
-1.  Login ke cPanel hosting Anda.
-2.  Buka **MySQL Database Wizard**.
-3.  Buat database baru, misalnya: `uXXXX_qgame`.
-4.  Buat user database baru, misalnya: `uXXXX_quser`.
-5.  Berikan password yang kuat. **Simpan detail ini!**
-6.  Assign user ke database dengan hak akses **ALL PRIVILEGES**.
+## 2. Konfigurasi Database
+
+**Q-Game menggunakan database Q-Link yang sama!**
+
+Di hosting, database sudah ada:
+- **Database Name**: `englishh_qlink`
+- **Username**: `englishh_quser` (atau sesuai konfigurasi)
+
+Anda **TIDAK** perlu membuat database baru. Cukup pastikan user database memiliki akses ke tabel Q-Game.
 
 ## 3. Upload File
 
-1.  Buka **File Manager** di cPanel.
-2.  Masuk ke root directory (biasanya di luar `public_html`, sejajar dengan folder tersebut).
-3.  Buat folder baru bernama `q-game-core`.
-4.  Upload `q-game-deployment.zip` ke dalam folder `q-game-core`.
-5.  Extract file zip tersebut di sana.
+1. Buka **File Manager** di cPanel.
+2. Masuk ke root directory (sejajar dengan `public_html`).
+3. Buat folder `q-game-core` (jika belum ada).
+4. Upload `q-game-deployment.zip` ke dalam folder tersebut.
+5. Extract file zip.
 
-Struktur folder Anda seharusnya terlihat seperti ini:
+Struktur folder:
 ```
 /
 ├── public_html/
-│   └── ...
-├── q-game-core/
+│   └── game/          <- Folder publik subdomain
+├── q-game-core/       <- Folder aplikasi Laravel
 │   ├── app/
 │   ├── bootstrap/
+│   ├── config/
 │   ├── ...
 │   └── .env.production
 └── ...
@@ -41,81 +52,128 @@ Struktur folder Anda seharusnya terlihat seperti ini:
 
 ## 4. Konfigurasi Aplikasi
 
-1.  Masuk ke folder `q-game-core`.
-2.  Rename file `.env.production` menjadi `.env`.
-3.  Edit file `.env` tersebut:
-    *   Set `APP_URL=https://game.q-link.my.id`
-    *   Isi `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD` sesuai yang Anda buat di langkah 2.
-    *   Pastikan `APP_DEBUG=false`.
+1. Masuk ke folder `q-game-core`.
+2. Rename `.env.production` menjadi `.env`.
+3. Edit file `.env`:
 
-## 5. Mengatur Folder Publik (Public HTML)
+```env
+APP_KEY=                          # Akan di-generate
+APP_URL=https://game.q-link.my.id
+APP_DEBUG=false
 
-Karena ini adalah subdomain (`game.q-link.my.id`), kita perlu meletakkan file publik di tempat yang diarahkan oleh subdomain tersebut.
+# Database Q-Link
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=englishh_qlink        # Database Q-Link
+DB_USERNAME=englishh_quser        # Username database
+DB_PASSWORD=PASSWORD_ANDA         # ← ISI PASSWORD
 
-1.  Tentukan folder root dokumen untuk subdomain `game.q-link.my.id`. Biasanya ada di `public_html/game` atau folder khusus yang Anda set saat membuat subdomain.
-2.  Pindahkan **seluruh isi** folder `q-game-core/public` ke folder root subdomain tersebut (misalnya `public_html/game`).
-3.  Edit file `index.php` yang baru saja Anda pindahkan (di `public_html/game/index.php`):
+# SSO dengan Q-Link
+SESSION_DOMAIN=.q-link.my.id
+```
 
-    Cari baris ini:
-    ```php
-    require __DIR__.'/../vendor/autoload.php';
-    ...
-    $app = require __DIR__.'/../bootstrap/app.php';
-    ```
+## 5. Konfigurasi Folder Publik
 
-    Ubah menjadi (sesuaikan path agar mengarah kembali ke folder core):
-    ```php
-    require __DIR__.'/../../q-game-core/vendor/autoload.php';
-    ...
-    $app = require __DIR__.'/../../q-game-core/bootstrap/app.php';
-    ```
-    *(Jumlah `../` tergantung seberapa dalam folder subdomain Anda dari root).*
+### Untuk subdomain `game.q-link.my.id`
 
-## 6. Setup Storage Link
+1. Tentukan folder root subdomain (biasanya `public_html/game`).
+2. Pindahkan **seluruh isi** `q-game-core/public` ke folder subdomain tersebut.
+3. Edit `index.php` di folder subdomain:
 
-Agar gambar/file bisa diakses, Anda perlu membuat symlink.
-Di cPanel, seringkali kita tidak punya akses SSH. Anda bisa menggunakan route khusus atau script PHP sederhana.
+```php
+// Ubah path ini:
+require __DIR__.'/../vendor/autoload.php';
+$app = require __DIR__.'/../bootstrap/app.php';
 
-**Cara Script PHP:**
-1.  Buat file `link.php` di folder publik subdomain (`public_html/game/link.php`).
-2.  Isi dengan:
-    ```php
-    <?php
-    $target = '/home/username_cpanel/q-game-core/storage/app/public';
-    $shortcut = '/home/username_cpanel/public_html/game/storage';
-    symlink($target, $shortcut);
-    echo "Symlink created";
-    ?>
-    ```
-    *(Ganti path sesuai struktur hosting Anda. Anda bisa melihat path lengkap di sidebar kiri File Manager).*
-3.  Buka browser: `https://game.q-link.my.id/link.php`.
-4.  Jika sukses, hapus file `link.php`.
+// Menjadi (sesuaikan path):
+require __DIR__.'/../../q-game-core/vendor/autoload.php';
+$app = require __DIR__.'/../../q-game-core/bootstrap/app.php';
+```
+
+## 6. Setup Storage Symlink
+
+Buat symlink untuk mengakses file storage:
+
+**Via Script PHP (Jika tidak ada SSH):**
+
+1. Buat file `link.php` di folder publik subdomain:
+```php
+<?php
+$target = '/home/USERNAME_CPANEL/q-game-core/storage/app/public';
+$shortcut = '/home/USERNAME_CPANEL/public_html/game/storage';
+symlink($target, $shortcut);
+echo "Symlink created!";
+?>
+```
+
+2. Akses: `https://game.q-link.my.id/link.php`
+3. **HAPUS file `link.php`** setelah berhasil.
 
 ## 7. Migrasi Database
 
-Karena Anda menggunakan MySQL di hosting dan SQLite di lokal, Anda perlu menjalankan migrasi.
+Migrasi Q-Game **HANYA membuat tabel-tabel milik Q-Game**. Tabel `users`, `sessions`, dll tetap dari Q-Link.
 
-**Opsi A: Via SSH (Jika ada)**
-1.  `cd q-game-core`
-2.  `php artisan migrate --force`
+**Via SSH (Jika ada):**
+```bash
+cd q-game-core
+php artisan key:generate --force
+php artisan migrate --force
+php artisan optimize
+```
 
-**Opsi B: Via Route (Hati-hati, hapus setelah pakai)**
-1.  Buat file `migrate.php` di folder publik.
-2.  Isi dengan:
-    ```php
-    <?php
-    require __DIR__.'/../../q-game-core/vendor/autoload.php';
-    $app = require __DIR__.'/../../q-game-core/bootstrap/app.php';
-    $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-    $response = $kernel->handle(
-        $request = Illuminate\Http\Request::capture()
-    );
-    // Panggil artisan
-    Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-    echo nl2br(Illuminate\Support\Facades\Artisan::output());
-    ?>
-    ```
-3.  Akses di browser.
-4.  **HAPUS SEGERA** setelah selesai.
+**Via Script PHP (Tanpa SSH):**
 
-Selesai! Aplikasi Anda siap digunakan.
+Buat `migrate.php`:
+```php
+<?php
+require __DIR__.'/../../q-game-core/vendor/autoload.php';
+$app = require __DIR__.'/../../q-game-core/bootstrap/app.php';
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+$response = $kernel->handle($request = Illuminate\Http\Request::capture());
+
+// Generate key jika belum ada
+Illuminate\Support\Facades\Artisan::call('key:generate', ['--force' => true]);
+echo "Key generated<br>";
+
+// Migrate
+Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+echo nl2br(Illuminate\Support\Facades\Artisan::output());
+
+// Optimize
+Illuminate\Support\Facades\Artisan::call('optimize');
+echo "<br>Optimized!";
+?>
+```
+
+Akses di browser, lalu **HAPUS SEGERA** setelah selesai!
+
+## 8. Verifikasi
+
+1. Buka `https://game.q-link.my.id`
+2. Coba login dengan akun **guru** atau **admin** dari Q-Link
+3. Pastikan halaman game dan admin dapat diakses
+
+## ⚠️ Catatan Penting
+
+- **Role `user` (siswa)** tidak bisa login ke admin panel Q-Game
+- **Hanya `admin` dan `guru`** yang bisa mengakses panel admin
+- Session akan **shared** dengan Q-Link berkat `SESSION_DOMAIN=.q-link.my.id`
+
+## 🆘 Troubleshooting
+
+### Login gagal padahal akun benar
+- Cek apakah role akun adalah `admin` atau `guru`
+- Pastikan `SESSION_DOMAIN` sudah diset
+
+### Error "SQLSTATE[42S02]: Table not found"
+- Jalankan migrasi terlebih dahulu
+- Pastikan koneksi database benar
+
+### Asset tidak muncul (CSS/JS 404)
+- Pastikan `npm run build` sudah dijalankan
+- Cek path di `index.php`
+
+---
+
+Selesai! Aplikasi Q-Game sekarang terintegrasi dengan Q-Link. 🎉

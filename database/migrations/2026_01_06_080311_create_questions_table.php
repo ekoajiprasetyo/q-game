@@ -8,13 +8,14 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * RENAMED: questions -> game_questions (menghindari konflik dengan Q-Exam)
      */
     public function up(): void
     {
-        Schema::create('questions', function (Blueprint $table) {
+        Schema::create('game_questions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('topic_id')->constrained()->onDelete('cascade');
+            $table->foreignId('topic_id')->constrained('game_topics')->onDelete('cascade');
             $table->unsignedBigInteger('material_id')->nullable(); // No constraint yet to avoid order issues
             $table->text('question_text');
             // Complete enum
@@ -36,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('questions');
+        Schema::dropIfExists('game_questions');
     }
 };

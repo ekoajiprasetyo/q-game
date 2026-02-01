@@ -12,6 +12,12 @@ class TournamentMatch extends Model
 {
     use HasFactory;
 
+    /**
+     * The table associated with the model.
+     * RENAMED to avoid conflict
+     */
+    protected $table = 'game_tournament_matches';
+
     protected $fillable = [
         'tournament_id',
         'round',
@@ -34,7 +40,7 @@ class TournamentMatch extends Model
 
     public function tournament()
     {
-        return $this->belongsTo(Tournament::class);
+        return $this->belongsTo(Tournament::class, 'tournament_id');
     }
 
     public function team1()
@@ -64,11 +70,11 @@ class TournamentMatch extends Model
 
     public function topic()
     {
-        return $this->belongsTo(\App\Models\Topic::class);
+        return $this->belongsTo(Topic::class);
     }
 
     public function material()
     {
-        return $this->belongsTo(\App\Models\Material::class);
+        return $this->belongsTo(Material::class);
     }
 }

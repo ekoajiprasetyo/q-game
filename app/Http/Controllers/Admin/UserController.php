@@ -15,16 +15,17 @@ class UserController extends Controller
      */
     public function index()
     {
-        // User Statistics
-        $totalUsers = User::count();
-        $totalTeachers = User::where('role', 'teacher')->count();
+        // User Statistics - Only count admin and guru for Q-Game
+        $totalUsers = User::whereIn('role', ['admin', 'guru'])->count();
+        $totalGuru = User::where('role', 'guru')->count();
         $totalAdmins = User::where('role', 'admin')->count();
 
-        // Get all users (teachers and admins)
-        // If we want to show only teachers, we can filter, but admin implies user management
-        $users = User::orderBy('created_at', 'desc')->paginate(10);
+        // Get only admin and guru users (exclude students/user role)
+        $users = User::whereIn('role', ['admin', 'guru'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
         
-        return view('admin.users.index', compact('users', 'totalUsers', 'totalTeachers', 'totalAdmins'));
+        return view('admin.users.index', compact('users', 'totalUsers', 'totalGuru', 'totalAdmins'));
     }
 
     /**
@@ -44,7 +45,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'in:admin,teacher'],
+            'role' => ['required', 'in:admin,guru'],
         ]);
 
         User::create([
@@ -86,7 +87,7 @@ class UserController extends Controller
         $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'role' => ['required', 'in:admin,teacher'],
+            'role' => ['required', 'in:admin,guru'],
         ];
 
         // Only validate password if it's provided (for changing password)

@@ -8,6 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * Updated: topic_id references game_topics
      */
     public function up(): void
     {
@@ -15,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('title')->nullable(); // e.g. "Matematika - Kelas 7A"
             $table->enum('game_mode', ['race', 'turn_based'])->default('race');
-            $table->foreignId('topic_id')->constrained()->onDelete('cascade');
+            $table->foreignId('topic_id')->constrained('game_topics')->onDelete('cascade');
             $table->string('team_blue_name')->default('Tim Biru');
             $table->string('team_red_name')->default('Tim Merah');
             $table->integer('team_blue_score')->default(0);

@@ -13,10 +13,18 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
+        // Flow 2 Check: Jika sudah login via SSO session, redirect ke dashboard
         if (Auth::check()) {
             return redirect()->route('admin.dashboard');
         }
-        return view('auth.login');
+
+        // Flow 1: Belum login, redirect ke halaman login Q-Link
+        // Kita kirim parameter 'redirect' agar Q-Link mengembalikan user ke sini setelah login
+        // Target kembali adalah dashboard admin Q-Game
+        $targetUrl = route('admin.dashboard'); 
+        $qLinkLoginUrl = 'https://q-link.my.id/login?redirect=' . urlencode($targetUrl);
+        
+        return redirect()->away($qLinkLoginUrl);
     }
 
     /**
@@ -50,6 +58,7 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        // FIX Flow 1: Logout diarahkan ke Halaman Depan Game (bukan login page Q-Link)
+        return redirect()->route('game');
     }
 }

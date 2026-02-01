@@ -11,6 +11,7 @@ class IsAdmin
 {
     /**
      * Handle an incoming request.
+     * Only allows admin role (for management pages)
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */

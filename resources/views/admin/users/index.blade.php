@@ -38,7 +38,7 @@
                 <i data-feather="briefcase"></i>
             </div>
             <div class="stat-content">
-                <div class="stat-value">{{ $totalTeachers }}</div>
+                <div class="stat-value">{{ $totalGuru }}</div>
                 <div class="stat-label">Guru</div>
             </div>
         </div>
@@ -176,7 +176,7 @@
                     <label class="form-label">Role</label>
                     <div class="custom-dropdown">
                         <select name="role" class="form-control" required>
-                            <option value="teacher">Guru</option>
+                            <option value="guru">Guru</option>
                             <option value="admin">Administrator</option>
                         </select>
                         <div class="invalid-feedback" style="display: none; color: var(--danger); font-size: 0.85em; margin-top: 0.25rem;"></div>
@@ -242,7 +242,7 @@
                     <label class="form-label">Role</label>
                     <div class="custom-dropdown">
                         <select name="role" id="edit_role" class="form-control" required>
-                            <option value="teacher">Guru</option>
+                            <option value="guru">Guru</option>
                             <option value="admin">Administrator</option>
                         </select>
                         <div class="invalid-feedback" style="display: none; color: var(--danger); font-size: 0.85em; margin-top: 0.25rem;"></div>

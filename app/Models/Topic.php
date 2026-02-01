@@ -9,6 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Topic extends Model
 {
+    /**
+     * The table associated with the model.
+     * RENAMED to avoid conflict with Q-Exam's topics table
+     */
+    protected $table = 'game_topics';
+
     protected $fillable = [
         'name',
         'description',
@@ -36,23 +42,11 @@ class Topic extends Model
 
     /**
      * Get all questions for this topic (direct + through materials).
-     * Note: Originally this project linked questions directly to topics too.
-     * But now we prefer through materials.
-     * If we want to support direct questions too, we might need a custom getter.
-     * For now, let's keep the hasManyThrough, but also add direct hasMany since questions table still has topic_id
      */
     public function questions()
     {
-        // Since questions table has topic_id, we can define direct relationship.
         return $this->hasMany(Question::class);
     }
-
-    /*
-    public function questionsThroughMaterials(): HasManyThrough
-    {
-        return $this->hasManyThrough(Question::class, Material::class);
-    }
-    */
 
     /**
      * Get the count of materials in this topic.

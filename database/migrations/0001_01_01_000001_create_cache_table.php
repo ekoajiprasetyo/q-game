@@ -8,20 +8,12 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * CATATAN: Tabel cache sudah ada di Q-Link.
+     * Migrasi ini di-skip karena Q-Game menggunakan database bersama dengan Q-Link.
      */
     public function up(): void
     {
-        Schema::create('cache', function (Blueprint $table) {
-            $table->string('key')->primary();
-            $table->mediumText('value');
-            $table->integer('expiration');
-        });
-
-        Schema::create('cache_locks', function (Blueprint $table) {
-            $table->string('key')->primary();
-            $table->string('owner');
-            $table->integer('expiration');
-        });
+        // SKIP - Tabel ini sudah ada di database Q-Link
     }
 
     /**
@@ -29,7 +21,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cache');
-        Schema::dropIfExists('cache_locks');
+        // SKIP - Jangan hapus tabel karena dimiliki Q-Link
     }
 };

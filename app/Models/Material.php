@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Material extends Model
 {
+    /**
+     * The table associated with the model.
+     * RENAMED to avoid conflict with Q-Link
+     */
+    protected $table = 'game_materials';
+
     protected $fillable = [
         'topic_id',
         'name',
