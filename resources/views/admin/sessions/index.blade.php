@@ -78,7 +78,32 @@
 
     <!-- Sessions List -->
     @if($surpriseSessions->isNotEmpty())
-        <div class="card mb-4"><div class="card-body"><h3 style="margin:0 0 1rem;font-size:1.1rem">🎁 Riwayat Kotak Kejutan</h3><div style="display:grid;gap:.75rem">@foreach($surpriseSessions as $session)@php($topScore = $session->teams->max('score'))<a href="{{ route('surprise.play', $session) }}" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem;border:1px solid #e9d5ff;border-radius:12px;text-decoration:none;color:inherit;background:#faf5ff"><div><strong>{{ $session->title ?? $session->topic?->name ?? 'Kotak Kejutan' }}</strong><div class="text-muted" style="font-size:.82rem;margin-top:4px">{{ $session->teams->count() }} tim · {{ $session->board_size }} kartu · {{ $session->ended_at?->format('d M Y, H:i') }}</div></div><div style="text-align:right"><strong>{{ $session->teams->where('score', $topScore)->pluck('name')->join(', ') }}</strong><div style="color:#6d28d9;font-weight:700">🏆 {{ $topScore }} poin</div></div></a>@endforeach</div></div></div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 style="margin:0 0 1rem;font-size:1.1rem">🎁 Riwayat Kotak Kejutan</h3>
+                <div style="display:grid;gap:.75rem">
+                    @foreach($surpriseSessions as $session)
+                        @php($topScore = $session->teams->max('score'))
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem;border:1px solid #e9d5ff;border-radius:12px;background:#faf5ff">
+                            <a href="{{ route('surprise.play', $session) }}" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex:1;min-width:0;text-decoration:none;color:inherit">
+                                <div>
+                                    <strong>{{ $session->title ?? $session->topic?->name ?? 'Kotak Kejutan' }}</strong>
+                                    <div class="text-muted" style="font-size:.82rem;margin-top:4px">{{ $session->teams->count() }} tim · {{ $session->board_size }} kartu · {{ $session->ended_at?->format('d M Y, H:i') }}</div>
+                                </div>
+                                <div style="text-align:right"><strong>{{ $session->teams->where('score', $topScore)->pluck('name')->join(', ') }}</strong><div style="color:#6d28d9;font-weight:700">🏆 {{ $topScore }} poin</div></div>
+                            </a>
+                            @if(auth()->user()->isAdmin() || $session->created_by == auth()->id())
+                                <form method="POST" action="{{ route('admin.surprise-sessions.destroy', $session) }}" onsubmit="return confirm('Hapus riwayat Kotak Kejutan ini? Data tim, kartu, dan hasilnya juga akan dihapus.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Hapus riwayat Kotak Kejutan"><i data-feather="trash-2" style="width:15px;height:15px"></i> Hapus</button>
+                                </form>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
     @endif
     @if($sessions->isEmpty())
         <div class="card">

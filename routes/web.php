@@ -99,6 +99,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,guru'])-
     Route::get('sessions/{session}/modal', [GameSessionController::class, 'modalContent'])->name('sessions.modal');
     Route::get('sessions/{session}', [GameSessionController::class, 'show'])->name('sessions.show');
     Route::delete('sessions/{session}', [GameSessionController::class, 'destroy'])->name('sessions.destroy');
+    Route::delete('surprise-sessions/{surpriseSession}', [GameSessionController::class, 'destroySurprise'])->name('surprise-sessions.destroy');
 
     // Tournaments (Admin)
     Route::post('tournaments/{tournament}/reshuffle', [\App\Http\Controllers\Admin\TournamentController::class, 'reshuffle'])->name('tournaments.reshuffle');

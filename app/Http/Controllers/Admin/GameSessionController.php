@@ -152,6 +152,25 @@ class GameSessionController extends Controller
             ->with('success', 'Riwayat game berhasil dihapus!');
     }
 
+    /**
+     * Remove a completed Kotak Kejutan history entry and its dependent data.
+     */
+    public function destroySurprise(SurpriseSession $surpriseSession)
+    {
+        abort_unless($surpriseSession->status === 'finished', 422, 'Hanya riwayat permainan yang sudah selesai yang dapat dihapus.');
+
+        if (Auth::user()->role !== 'admin' && $surpriseSession->created_by != Auth::id()) {
+            abort(403, 'Anda tidak memiliki akses menghapus riwayat ini.');
+        }
+
+        // Foreign-key cascades remove the session's teams, cards, and events.
+        $surpriseSession->delete();
+
+        return redirect()
+            ->route('admin.sessions.index')
+            ->with('success', 'Riwayat Kotak Kejutan berhasil dihapus.');
+    }
+
     private function getSequentialTitle($session) {
         $userId = $session->created_by;
         $matId = $session->material_id ?? 0;
