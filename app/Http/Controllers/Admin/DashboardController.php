@@ -25,7 +25,9 @@ class DashboardController extends Controller
         $totalTopics = Topic::count();
         $totalMaterials = Material::count();
         $totalQuestions = Question::count();
-        $totalSessions = GameSession::count();
+        // Both game modes have their own session table, so the dashboard total
+        // must combine Tarik Tambang and Kotak Kejutan sessions.
+        $totalSessions = GameSession::count() + SurpriseSession::count();
 
         $recentTugSessions = GameSession::with('topic')
                             ->orderBy('created_at', 'desc')
