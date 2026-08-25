@@ -93,11 +93,9 @@
                                 <div style="text-align:right"><strong>{{ $session->teams->where('score', $topScore)->pluck('name')->join(', ') }}</strong><div style="color:#6d28d9;font-weight:700">🏆 {{ $topScore }} poin</div></div>
                             </a>
                             @if(auth()->user()->isAdmin() || $session->created_by == auth()->id())
-                                <form method="POST" action="{{ route('admin.surprise-sessions.destroy', $session) }}" onsubmit="return confirm('Hapus riwayat Kotak Kejutan ini? Data tim, kartu, dan hasilnya juga akan dihapus.');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" title="Hapus riwayat Kotak Kejutan"><i data-feather="trash-2" style="width:15px;height:15px"></i> Hapus</button>
-                                </form>
+                                <button type="button" class="btn btn-ghost btn-icon" title="Hapus" style="color: var(--danger);" onclick="confirmDelete('{{ route('admin.surprise-sessions.destroy', $session) }}')">
+                                    <i data-feather="trash-2"></i>
+                                </button>
                             @endif
                         </div>
                     @endforeach
