@@ -909,8 +909,8 @@
                 // 5. RENDER IMAGE
                 if (q.image_url) {
                     let src = q.image_url;
-                    if (!src.startsWith('http') && !src.startsWith('/')) {
-                        src = "/storage/" + src;
+                    if (!/^https?:\/\//i.test(src)) {
+                        src = new URL(src.replace(/^\/+/, ''), @json(rtrim(asset('/'), '/') . '/')).href;
                     }
                     if(imgEl) {
                         imgEl.src = src;

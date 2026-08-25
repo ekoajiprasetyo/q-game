@@ -482,10 +482,13 @@
         
         // Handle question image - add above question text
         if (question.image_url) {
+            const imageUrl = /^https?:\/\//i.test(question.image_url)
+                ? question.image_url
+                : new URL(question.image_url.replace(/^\/+/, ''), @json(rtrim(asset('/'), '/') . '/')).href;
             const imgDiv = document.createElement('div');
             imgDiv.className = 'preview-question-image';
             imgDiv.style.marginBottom = '1rem';
-            imgDiv.innerHTML = `<img src="${question.image_url}" alt="Question Image" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid var(--light-gray);">`;
+            imgDiv.innerHTML = `<img src="${imageUrl}" alt="Question Image" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid var(--light-gray);">`;
             document.getElementById('previewText').insertAdjacentElement('beforebegin', imgDiv);
         }
         

@@ -548,7 +548,7 @@
                             <p class="text-muted" style="font-size: 0.8rem; margin-top: 0.5rem; margin-bottom: 0;">Format: JPG, PNG, GIF. Max: 5MB</p>
                         </div>
                         <div id="imagePreviewWrapper" class="image-preview-wrapper" style="{{ $question->image_url ? '' : 'display: none;' }}">
-                            <img id="imagePreview" class="image-preview" src="{{ $question->image_url ?? '' }}" alt="Preview">
+                            <img id="imagePreview" class="image-preview" src="{{ $question->image_url ? (preg_match('/^https?:\\/\\//i', $question->image_url) ? $question->image_url : asset($question->image_url)) : '' }}" alt="Preview">
                             <div class="image-actions">
                                 <button type="button" class="image-action-btn edit" onclick="openResizeModalEdit()" title="Resize Gambar">
                                     <i data-feather="maximize-2" style="width: 16px; height: 16px;"></i>
