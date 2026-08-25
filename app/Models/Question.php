@@ -8,12 +8,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Question extends Model
 {
-    /**
-     * The table associated with the model.
-     * RENAMED to avoid conflict with Q-Exam's questions table
-     */
-    protected $table = 'game_questions';
-
     protected $fillable = [
         'created_by',
         'topic_id',

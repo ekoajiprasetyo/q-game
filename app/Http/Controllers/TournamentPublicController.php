@@ -17,9 +17,9 @@ class TournamentPublicController extends Controller
     {
         try {
             $request->validate(['pin' => 'required|string|size:6']);
-            
+
             $tournament = Tournament::where('pin', $request->pin)->first();
-            
+
             if ($tournament) {
                 return response()->json([
                     'success' => true,
@@ -33,7 +33,7 @@ class TournamentPublicController extends Controller
                     ]
                 ]);
             }
-            
+
             return response()->json([
                 'success' => false,
                 'is_tournament' => false,
@@ -53,17 +53,17 @@ class TournamentPublicController extends Controller
     public function bracket(Request $request)
     {
         $pin = $request->query('pin');
-        
+
         if (!$pin) {
             return redirect()->route('game.setup')->with('error', 'PIN turnamen tidak valid.');
         }
-        
+
         $tournament = Tournament::where('pin', $pin)->first();
-        
+
         if (!$tournament) {
             return redirect()->route('game.setup')->with('error', 'Turnamen tidak ditemukan.');
         }
-        
+
         // Determine whether to allow opening all playable matches
         $forceOpenAll = $this->shouldForceOpenAllMatches($tournament);
 
@@ -73,15 +73,15 @@ class TournamentPublicController extends Controller
         }
 
         $tournament->load([
-            'teams', 
-            'matches.team1', 
-            'matches.team2', 
-            'matches.winner', 
+            'teams',
+            'matches.team1',
+            'matches.team2',
+            'matches.winner',
             'matches.gameSession',
             'matches.topic',
             'matches.material'
         ]);
-        
+
         // Group matches by round, then sort each group by match_number
         $matchesByRound = $tournament->matches
             ->groupBy('round')
@@ -89,10 +89,10 @@ class TournamentPublicController extends Controller
             ->map(function ($matches) {
                 return $matches->sortBy('match_number')->values();
             });
-        
+
         // Get playable match IDs (all or just next, based on rule)
         $playableMatchIds = $this->getPlayableMatchIds($tournament, $forceOpenAll);
-        
+
         return view('game.tournament-bracket', compact('tournament', 'matchesByRound', 'playableMatchIds', 'forceOpenAll'));
     }
 
@@ -228,7 +228,7 @@ class TournamentPublicController extends Controller
             'time_per_question' => $match->time_per_question,
             'pull_strength' => 50,
             'status' => 'waiting',
-            'created_by' => null,
+            'created_by' => auth()->id() ?? $tournament->created_by,
         ]);
 
         // Link Session to Match

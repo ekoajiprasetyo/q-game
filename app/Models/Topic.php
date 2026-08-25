@@ -9,12 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Topic extends Model
 {
-    /**
-     * The table associated with the model.
-     * RENAMED to avoid conflict with Q-Exam's topics table
-     */
-    protected $table = 'game_topics';
-
     protected $fillable = [
         'name',
         'description',

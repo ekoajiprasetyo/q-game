@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Q-Game | Pengaturan</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -13,14 +13,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+
     <script src="https://unpkg.com/feather-icons"></script>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
+
     <!-- Vite Assets (Includes Turbo via app.js) -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="turbo-cache-control" content="no-cache">
     <style>
@@ -67,7 +67,7 @@
 
         .game-card {
             background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.8); border-radius: 16px; 
+            border: 1px solid rgba(255,255,255,0.8); border-radius: 16px;
             padding: 12px 20px; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex; align-items: center; gap: 15px; position: relative;
         }
@@ -84,6 +84,7 @@
             flex-shrink: 0; transition: transform 0.2s;
         }
         .game-icon { width: 55px; height: 55px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        .game-icon-wrapper.surprise-icon { background: linear-gradient(135deg, #A78BFA, #6D28D9); border-radius: 20px; color: #fff; font-size: 29px; box-shadow: 0 10px 24px rgba(139, 92, 246, 0.33); }
 
         .game-info h3 { font-size: 16px; font-weight: 600; margin-bottom: 2px; color: var(--text-main); transition: color 0.2s; }
         .game-info p { font-size: 12px; color: var(--text-muted); line-height: 1.3; margin: 0; transition: color 0.2s; }
@@ -94,7 +95,7 @@
             display: flex; flex-direction: column; pointer-events: none;
         }
         .settings-card {
-            width: 100%; height: 100%; background: #FFFFFF; border-radius: 0; 
+            width: 100%; height: 100%; background: #FFFFFF; border-radius: 0;
             box-shadow: -5px 0 30px rgba(0,0,0,0.05); display: flex; flex-direction: column;
             pointer-events: auto; border-left: 1px solid rgba(0,0,0,0.05);
         }
@@ -115,17 +116,17 @@
             text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-left: 6px;
         }
         .custom-input {
-            width: 100%; padding: 14px 24px; 
-            background: var(--primary); 
+            width: 100%; padding: 14px 24px;
+            background: var(--primary);
             border: 2px solid transparent; border-radius: 50px;
-            font-size: 16px; font-weight: 700; color: white; 
+            font-size: 16px; font-weight: 700; color: white;
             cursor: pointer; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: space-between; 
+            display: flex; align-items: center; justify-content: space-between;
             box-shadow: 0 4px 15px rgba(255, 155, 80, 0.3);
         }
         .custom-input:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 155, 80, 0.4); background: #FFAE70; }
         .custom-input.filled { background: var(--primary); border-color: transparent; }
-        
+
         .custom-input i { color: white !important; }
         .custom-input-value { font-family: 'Inter', monospace; letter-spacing: 1px; color: white !important; }
 
@@ -170,7 +171,7 @@
 
         .numpad-display {
             background: var(--primary); padding: 15px; border-radius: 16px; text-align: center; font-size: 28px;
-            font-weight: 700; color: white; margin-bottom: 20px; letter-spacing: 2px; 
+            font-weight: 700; color: white; margin-bottom: 20px; letter-spacing: 2px;
             border: 2px solid transparent; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
         }
         .numpad-display.active { border-color: rgba(255,255,255,0.5); }
@@ -263,9 +264,10 @@
                     <div class="game-info"><h3>Tarik Tambang</h3><p>Adu kecepatan antar tim.</p></div>
                     <div style="margin-left: auto;"><i data-feather="chevron-right" color="#ccc"></i></div>
                 </div>
-                <div class="game-card" style="opacity: 0.6; cursor: not-allowed; background: rgba(255,255,255,0.4);">
-                    <div class="game-icon-wrapper" style="background:#F1F5F9;"><i data-feather="lock" color="#94A3B8" width="16"></i></div>
-                    <div class="game-info"><h3 style="color:#94A3B8">Segera Hadir</h3><p style="color:#CBD5E1">Mode baru segera hadir.</p></div>
+                <div class="game-card" onclick="window.location.href='{{ route('surprise.setup') }}'">
+                    <div class="game-icon-wrapper surprise-icon" aria-hidden="true">🎁</div>
+                    <div class="game-info"><h3>Kotak Kejutan</h3><p>Pilih kartu, jawab pertanyaan, dan kumpulkan poin bersama tim.</p></div>
+                    <div style="margin-left: auto;"><i data-feather="chevron-right" color="#ccc"></i></div>
                 </div>
             </div>
         </div>
@@ -275,7 +277,7 @@
                 <div class="settings-header">
                     <button class="close-settings" onclick="closeSettings()"><i data-feather="x" width="18"></i></button>
                     <span class="settings-title">Pengaturan Game</span>
-                    <div style="width:36px;"></div> 
+                    <div style="width:36px;"></div>
                 </div>
                 <div class="settings-content">
                     <div class="input-group">
@@ -418,7 +420,7 @@
 
         window.openDurationModal = function() {
             window.gameState.currentMode = 'DURATION';
-            window.gameState.tempValue = window.gameState.durationDisplay; 
+            window.gameState.tempValue = window.gameState.durationDisplay;
             document.getElementById('modalTitle').innerText = 'Durasi (MM:SS)';
             window.updateModalDisplay();
             window.showModal();
@@ -426,27 +428,27 @@
 
         window.padInput = function(num) {
             const mode = window.gameState.currentMode;
-            if (mode === 'PIN') { 
-                if (window.gameState.tempValue.length < 6) window.gameState.tempValue += num; 
-            } 
-            else if (mode === 'QUESTIONS') { 
-                if (window.gameState.tempValue.length < 3) window.gameState.tempValue += num; 
+            if (mode === 'PIN') {
+                if (window.gameState.tempValue.length < 6) window.gameState.tempValue += num;
             }
-            else if (mode === 'DURATION') { 
-                if (window.gameState.tempValue.length < 4) window.gameState.tempValue += num; 
+            else if (mode === 'QUESTIONS') {
+                if (window.gameState.tempValue.length < 3) window.gameState.tempValue += num;
+            }
+            else if (mode === 'DURATION') {
+                if (window.gameState.tempValue.length < 4) window.gameState.tempValue += num;
             }
             window.updateModalDisplay();
         }
 
-        window.padClear = function() { 
-            window.gameState.tempValue = ''; 
-            window.updateModalDisplay(); 
+        window.padClear = function() {
+            window.gameState.tempValue = '';
+            window.updateModalDisplay();
         }
 
         window.updateModalDisplay = function() {
             const display = document.getElementById('modalDisplay');
             const mode = window.gameState.currentMode;
-            
+
             if (mode === 'PIN') {
                 display.innerText = window.gameState.tempValue ? window.gameState.tempValue.split('').join(' ') : '_ _ _ _ _ _';
             }
@@ -464,7 +466,7 @@
             document.getElementById('numpadModal').classList.add('active');
             if (typeof feather !== 'undefined') feather.replace();
         }
-        
+
         window.hideModal = function() {
             document.getElementById('numpadModal').classList.remove('active');
         }
@@ -479,7 +481,7 @@
                     window.showToast('Kode PIN terlalu pendek', 'error');
                     return;
                 }
-                
+
                 // --- VERIFY PIN AJAX ---
                 const btn = document.querySelector('.numpad-btn.action');
                 const oldIcon = btn.innerHTML;
@@ -503,21 +505,21 @@
                         window.gameState.isVerified = true;
                         window.gameState.isTournament = true;
                         window.gameState.tournament = tournamentData.tournament;
-                        
+
                         // Update PIN Display
                         const display = document.getElementById('display-pin');
                         display.innerText = pin.split('').join(' ');
                         document.getElementById('field-pin').classList.add('filled');
-                        
+
                         // Disable Questions & Duration fields for Tournament
                         document.getElementById('field-questions').style.opacity = '0.5';
                         document.getElementById('field-questions').style.pointerEvents = 'none';
                         document.getElementById('display-questions').innerText = 'Mode Turnamen';
-                        
+
                         document.getElementById('field-duration').style.opacity = '0.5';
                         document.getElementById('field-duration').style.pointerEvents = 'none';
                         document.getElementById('display-duration').innerText = 'Mode Turnamen';
-                        
+
                         window.showToast('🏆 PIN Mode Turnamen: ' + tournamentData.tournament.title, 'success');
                         window.hideModal();
                         return;
@@ -540,19 +542,19 @@
                         window.gameState.isTournament = false;
                         window.gameState.session_id = data.session.id;
                         window.gameState.maxQuestions = data.session.total_questions || 0;
-                        
+
                         // Update UI
                         const display = document.getElementById('display-pin');
                         display.innerText = pin.split('').join(' ') + ` - ${window.gameState.maxQuestions} Soal`;
                         display.style.color = 'var(--text-main)';
                         document.getElementById('field-pin').classList.add('filled');
-                        
+
                         // Re-enable fields (in case previously disabled by tournament)
                         document.getElementById('field-questions').style.opacity = '1';
                         document.getElementById('field-questions').style.pointerEvents = 'auto';
                         document.getElementById('field-duration').style.opacity = '1';
                         document.getElementById('field-duration').style.pointerEvents = 'auto';
-                        
+
                         // Set default questions to Max
                         window.gameState.questions = window.gameState.maxQuestions;
                         document.getElementById('display-questions').innerText = window.gameState.maxQuestions + ' Soal';
@@ -578,7 +580,7 @@
             }
             else if (mode === 'QUESTIONS') {
                 const val = parseInt(window.gameState.tempValue || '0');
-                
+
                 // NEW LOGIC: Validate against Max Questions
                 if (val > window.gameState.maxQuestions) {
                     window.showToast(`Jumlah soal terlalu banyak! Max: ${window.gameState.maxQuestions}`, 'error');
@@ -603,9 +605,9 @@
                 let raw = window.gameState.tempValue.padStart(4, '0');
                 let mins = parseInt(raw.substring(0,2)); let secs = parseInt(raw.substring(2,4));
                 let totalSecs = (mins * 60) + secs;
-                window.gameState.durationDisplay = window.gameState.tempValue; 
+                window.gameState.durationDisplay = window.gameState.tempValue;
                 window.gameState.durationSec = totalSecs;
-                
+
                 const display = document.getElementById('display-duration');
                 if (totalSecs > 0) {
                     display.innerText = raw.substring(0,2) + ':' + raw.substring(2,4); display.style.color = 'var(--text-main)';
@@ -635,10 +637,10 @@
 
         window.startGame = function() {
             if (!window.gameState.gameType) return;
-            
+
             // Check verification
-            if (!window.gameState.isVerified) { 
-                window.showToast('Kode PIN belum diverifikasi!', 'error'); return; 
+            if (!window.gameState.isVerified) {
+                window.showToast('Kode PIN belum diverifikasi!', 'error'); return;
             }
 
             // *** TOURNAMENT MODE: Redirect to Bracket ***
@@ -646,10 +648,10 @@
                 const btn = document.getElementById('startGameBtn');
                 btn.innerHTML = '<span>Memuat...</span>';
                 btn.disabled = true;
-                
+
                 // Direct navigation with Turbo to maintain fullscreen state
                 const targetUrl = "{{ route('tournament.bracket') }}?pin=" + window.gameState.pin;
-                
+
                 if (typeof Turbo !== 'undefined') {
                     Turbo.visit(targetUrl);
                 } else {
@@ -659,14 +661,14 @@
             }
 
             // *** NORMAL MODE ***
-            if (!window.gameState.session_id) { 
-                window.showToast('Kode PIN belum diverifikasi!', 'error'); return; 
+            if (!window.gameState.session_id) {
+                window.showToast('Kode PIN belum diverifikasi!', 'error'); return;
             }
             if (window.gameState.questions <= 0) {
-                 window.showToast('Jumlah soal belum diatur!', 'error'); return; 
+                 window.showToast('Jumlah soal belum diatur!', 'error'); return;
             }
             if (window.gameState.durationSec <= 0) {
-                 window.showToast('Durasi permainan belum diatur!', 'error'); return; 
+                 window.showToast('Durasi permainan belum diatur!', 'error'); return;
             }
 
             const btn = document.getElementById('startGameBtn');
@@ -677,17 +679,17 @@
             const overlay = document.getElementById('countdown-overlay');
             const numEl = document.getElementById('countdown-number');
             overlay.classList.add('active');
-            
+
             let count = 5;
             numEl.innerText = count;
-            
+
             const timer = setInterval(() => {
                 count--;
                 if (count > 0) {
                     numEl.innerText = count;
                 } else {
                     clearInterval(timer);
-                    
+
                     // Clear Previous Session Timer to ensure Fresh Start from Setup
                     if(window.gameState && window.gameState.session_id) {
                          sessionStorage.removeItem(`qgame_end_${window.gameState.session_id}`);
@@ -699,12 +701,12 @@
                     const params = new URLSearchParams({
                         game_mode: window.gameState.gameType,
                         pin: window.gameState.pin,
-                        questions: window.gameState.questions, 
+                        questions: window.gameState.questions,
                         duration: window.gameState.durationSec,
                         session_id: window.gameState.session_id,
                         fs_request: fs
                     });
-                    
+
                     if (typeof Turbo !== 'undefined') {
                         Turbo.visit("{{ route('game.play') }}?" + params.toString());
                     } else {
@@ -720,13 +722,13 @@
             document.body.style.height = '';
             document.body.style.overflowY = '';
             document.body.style.overflowX = '';
-            
+
             // Force Setup Layout Stability handled by CSS body.setup-page
-            
+
             // Reset UI State (fix for Turbo Cache showing countdown)
             const overlay = document.getElementById('countdown-overlay');
             if(overlay) overlay.classList.remove('active');
-            
+
             const btn = document.getElementById('startGameBtn');
             if(btn) {
                 btn.innerHTML = '<span>Meluncur</span> <i data-feather="play"></i>';
@@ -737,13 +739,13 @@
             const p = new URLSearchParams(window.location.search);
             if(p.get('reset') === '1') {
                 window.history.replaceState({}, '', window.location.pathname);
-                
+
                 // 1. Deselect Game Cards
                 document.querySelectorAll('.game-card').forEach(c => c.classList.remove('active'));
-                
+
                 // 2. Hide Settings Panel (Mobile Toggle)
                 const panel = document.getElementById('settingsPanel');
-                if(panel) panel.classList.remove('active'); 
+                if(panel) panel.classList.remove('active');
 
                 // 3. Clear Input Displays
                 const dPin = document.getElementById('display-pin');
@@ -752,13 +754,13 @@
                 if(dQ) { dQ.innerText = '0 Soal'; dQ.style.color = '#9CA3AF'; document.getElementById('field-questions').classList.remove('filled'); }
                 const dDur = document.getElementById('display-duration');
                 if(dDur) { dDur.innerText = '00:00'; dDur.style.color = '#9CA3AF'; document.getElementById('field-duration').classList.remove('filled'); }
-                
+
                 // 3.5 Re-enable fields (in case disabled by tournament mode)
                 document.getElementById('field-questions').style.opacity = '1';
                 document.getElementById('field-questions').style.pointerEvents = 'auto';
                 document.getElementById('field-duration').style.opacity = '1';
                 document.getElementById('field-duration').style.pointerEvents = 'auto';
-                
+
                 // 4. Show Feedback
                 setTimeout(() => { if(window.showToast) window.showToast("Sesi diakhiri.", "info"); }, 300);
             }
@@ -770,7 +772,7 @@
             };
             if (typeof feather !== 'undefined') feather.replace();
             window.gameHelpers.updateFullscreenIcon('btn-fullscreen-setup');
-            
+
             const modal = document.getElementById('numpadModal');
             if(modal) {
                 modal.addEventListener('click', (e) => {

@@ -16,7 +16,8 @@ class MaterialController extends Controller
     public function index(Request $request, Topic $topic)
     {
         // Access Check
-        if (Auth::user()->role !== 'admin' && $topic->created_by !== Auth::id()) {
+        // Access Check - Strict
+        if (Auth::user()->role !== 'admin' && $topic->created_by != Auth::id()) {
             abort(403, 'Anda tidak memiliki akses ke topik ini.');
         }
 
@@ -41,7 +42,7 @@ class MaterialController extends Controller
      */
     public function create(Topic $topic)
     {
-        if (Auth::user()->role !== 'admin' && $topic->created_by !== Auth::id()) {
+        if (Auth::user()->role !== 'admin' && $topic->created_by != Auth::id()) {
             abort(403, 'Anda tidak memiliki akses.');
         }
         return view('admin.materials.create', compact('topic'));
@@ -52,7 +53,7 @@ class MaterialController extends Controller
      */
     public function store(Request $request, Topic $topic)
     {
-        if (Auth::user()->role !== 'admin' && $topic->created_by !== Auth::id()) {
+        if (Auth::user()->role !== 'admin' && $topic->created_by != Auth::id()) {
             abort(403, 'Anda tidak memiliki akses.');
         }
 
@@ -75,7 +76,7 @@ class MaterialController extends Controller
      */
     public function edit(Topic $topic, Material $material)
     {
-        if (Auth::user()->role !== 'admin' && $topic->created_by !== Auth::id()) {
+        if (Auth::user()->role !== 'admin' && $topic->created_by != Auth::id()) {
             abort(403, 'Anda tidak memiliki akses.');
         }
         return view('admin.materials.edit', compact('topic', 'material'));
@@ -86,7 +87,7 @@ class MaterialController extends Controller
      */
     public function update(Request $request, Topic $topic, Material $material)
     {
-        if (Auth::user()->role !== 'admin' && $topic->created_by !== Auth::id()) {
+        if (Auth::user()->role !== 'admin' && $topic->created_by != Auth::id()) {
             abort(403, 'Anda tidak memiliki akses.');
         }
 
@@ -109,7 +110,7 @@ class MaterialController extends Controller
      */
     public function destroy(Topic $topic, Material $material)
     {
-        if (Auth::user()->role !== 'admin' && $topic->created_by !== Auth::id()) {
+        if (Auth::user()->role !== 'admin' && $topic->created_by != Auth::id()) {
             abort(403, 'Anda tidak memiliki akses.');
         }
 
@@ -133,7 +134,7 @@ class MaterialController extends Controller
     public function generatePin(Topic $topic, Material $material)
     {
         // Access Check
-        if (Auth::user()->role !== 'admin' && $topic->created_by !== Auth::id()) {
+        if (Auth::user()->role !== 'admin' && $topic->created_by != Auth::id()) {
             abort(403, 'Anda tidak memiliki akses.');
         }
 
@@ -156,7 +157,7 @@ class MaterialController extends Controller
                 $isConflict = \App\Models\GameSession::where('session_pin', $oldPin)
                     ->whereIn('status', ['waiting', 'playing'])
                     ->exists();
-                
+
                 if (!$isConflict) {
                     $pin = $oldPin;
                 }
@@ -169,7 +170,7 @@ class MaterialController extends Controller
                     $pin = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
                 }
             }
-            
+
             $session = \App\Models\GameSession::create([
                 'title' => 'Sesi: ' . $material->name,
                 'game_mode' => 'race', // Default mode for tug of war
@@ -185,7 +186,7 @@ class MaterialController extends Controller
                 'time_per_question' => 30, // Default time
             ]);
         }
-        
+
         return response()->json([
             'success' => true,
             'pin' => $session->session_pin,

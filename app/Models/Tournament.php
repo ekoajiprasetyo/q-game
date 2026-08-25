@@ -11,12 +11,6 @@ class Tournament extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     * RENAMED to avoid conflict
-     */
-    protected $table = 'game_tournaments';
-
     protected $fillable = [
         'title',
         'description',

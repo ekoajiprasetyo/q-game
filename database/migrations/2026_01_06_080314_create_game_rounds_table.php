@@ -8,14 +8,14 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * Updated: question_id references game_questions
+     * Updated: question_id references q_game.questions
      */
     public function up(): void
     {
         Schema::create('game_rounds', function (Blueprint $table) {
             $table->id();
             $table->foreignId('game_session_id')->constrained('game_sessions')->onDelete('cascade');
-            $table->foreignId('question_id')->constrained('game_questions')->onDelete('cascade');
+            $table->foreignId('question_id')->constrained('questions')->cascadeOnDelete();
             $table->integer('round_number');
             $table->string('team_blue_answer')->nullable();
             $table->string('team_red_answer')->nullable();

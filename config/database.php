@@ -94,7 +94,9 @@ return [
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
-            'search_path' => 'public',
+            // Keep Q-Game tables in its own PostgreSQL schema while allowing
+            // explicit access to shared Q-Link identity tables through core.
+            'search_path' => env('DB_SCHEMA', 'public'),
             'sslmode' => 'prefer',
         ],
 
@@ -127,7 +129,9 @@ return [
     */
 
     'migrations' => [
-        'table' => 'migrations',
+        // Provision q_game.migrations before the first deploy. The unqualified
+        // name then resolves to the application schema through DB_SCHEMA.
+        'table' => env('DB_MIGRATIONS_TABLE', 'migrations'),
         'update_date_on_publish' => true,
     ],
 

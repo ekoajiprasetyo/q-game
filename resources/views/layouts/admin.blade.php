@@ -5,29 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') | Q-Game</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <!-- Feather Icons -->
     <script src="https://unpkg.com/feather-icons"></script>
 
-    <!-- Summernote Lite (No Bootstrap needed) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-
-    <!-- KaTeX for Math Formulas -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-    
     <style>
         :root {
             /* Warm Color Palette - Game-like */
@@ -35,23 +25,23 @@
             --primary-dark: #E58B45;
             --primary-light: #FFB980;
             --secondary: #FFD699;
-            
+
             /* Team Colors */
             --team-blue: #6EC6FF;
             --team-red: #FF8A8A;
-            
+
             /* Accent Colors */
             --accent-purple: #B47EFF;
             --accent-green: #7DCEA0;
             --accent-pink: #FF9ECD;
             --accent-yellow: #FFE066;
-            
+
             /* Semantic */
             --success: #7DCEA0;
             --warning: #FFD166;
             --danger: #FF8A8A;
             --info: #6EC6FF;
-            
+
             /* Neutral Tones */
             --dark: #2D3142;
             --dark-soft: #4F5D75;
@@ -60,20 +50,20 @@
             --cream: #FFF8F0;
             --cream-dark: #FFE5D9;
             --white: #FFFFFF;
-            
+
             /* Shadows */
             --shadow-soft: 0 4px 20px rgba(45, 49, 66, 0.08);
             --shadow-medium: 0 8px 30px rgba(45, 49, 66, 0.12);
             --shadow-strong: 0 15px 50px rgba(45, 49, 66, 0.15);
             --shadow-glow: 0 8px 30px rgba(255, 155, 80, 0.3);
-            
+
             /* Border Radius */
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
             --radius-xl: 24px;
             --radius-full: 9999px;
-            
+
             /* Transitions */
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -1293,14 +1283,14 @@
         .pagination-container nav > div:first-child {
             display: none !important;
         }
-        
+
         .pagination-container nav > div:last-child {
             display: flex !important;
             flex-direction: column;
             align-items: center;
             gap: 1rem;
         }
-        
+
         .pagination-container nav p {
             font-size: 0.8rem;
             color: var(--gray);
@@ -1310,7 +1300,7 @@
         /* ===== UTILITIES ===== */
         .text-muted { color: var(--gray); }
         .text-center { text-align: center; }
-        
+
         .d-flex { display: flex; }
         .d-grid { display: grid; }
         .gap-1 { gap: 0.25rem; }
@@ -1473,7 +1463,7 @@
                     <i data-feather="home"></i>
                     <span>Dashboard</span>
                 </a>
-                
+
                 @if(Auth::check() && Auth::user()->role === 'admin')
                 <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                     <i data-feather="users"></i>
@@ -1598,7 +1588,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="toast-container" id="toastContainer">
         @if(session('success'))
             <div class="toast toast-success" id="successToast">
@@ -1738,7 +1728,7 @@
                         btn.innerHTML = '<i data-feather="check" style="width:14px;height:14px;margin-right:4px;"></i> Tersalin!';
                         feather.replace();
                     }
-                    
+
                     setTimeout(() => {
                         btn.innerHTML = originalHtml;
                         if (typeof feather !== 'undefined') feather.replace();
@@ -1751,11 +1741,11 @@
             const originalContent = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = 'Wait...'; // Simple loading text
-            
+
             try {
                 const baseUrl = "{{ url('/') }}";
                 const url = `${baseUrl}/admin/topics/${topicId}/materials/${materialId}/generate-pin`;
-                
+
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
@@ -1771,20 +1761,20 @@
                 }
 
                 const data = await response.json();
-                
+
                 if (data.success) {
                     const pin = data.pin;
-                    
+
                     const updateBtn = (b) => {
                         b.dataset.pin = pin;
                         b.classList.remove('btn-primary');
                         b.classList.add('btn-success');
                         b.title = "Klik untuk menyalin";
                         b.disabled = false;
-                        
+
                         // Default text if feather fails
                         b.innerHTML = `${pin}`;
-                        
+
                         if (typeof feather !== 'undefined') {
                             b.innerHTML = `<i data-feather="copy" style="width:14px;height:14px;margin-right:4px;"></i> ${pin}`;
                         }
@@ -1792,7 +1782,7 @@
 
                     updateBtn(btn);
                     if (typeof feather !== 'undefined') feather.replace();
-                    
+
                     // Sync other buttons
                     document.querySelectorAll(`.pin-btn-${materialId}`).forEach(otherBtn => {
                         if (otherBtn !== btn) updateBtn(otherBtn);
@@ -1807,7 +1797,7 @@
                 btn.classList.remove('btn-primary');
                 btn.classList.add('btn-danger');
                 btn.innerHTML = 'Err: ' + e.message; // Show error inside button
-                
+
                 setTimeout(() => {
                     btn.innerHTML = originalContent;
                     btn.classList.remove('btn-danger');

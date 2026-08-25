@@ -7,6 +7,7 @@ use App\Models\Topic;
 use App\Models\Material;
 use App\Models\Question;
 use App\Models\GameSession;
+use App\Models\SurpriseSession;
 use App\Models\Tournament;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,9 +26,30 @@ class DashboardController extends Controller
         $totalMaterials = Material::count();
         $totalQuestions = Question::count();
         $totalSessions = GameSession::count();
-        
-        $recentSessions = GameSession::with('topic')
+
+        $recentTugSessions = GameSession::with('topic')
                             ->orderBy('created_at', 'desc')
+                            ->take(5)
+                            ->get();
+        $recentSurpriseSessions = SurpriseSession::with(['topic', 'teams'])
+                            ->where('status', 'finished')
+                            ->orderBy('ended_at', 'desc')
+                            ->take(5)
+                            ->get();
+
+        $recentSessions = $recentTugSessions->map(function (GameSession $session) {
+            $session->history_type = 'tug';
+            $session->display_title = $this->getSessionName($session);
+            return $session;
+        })->concat($recentSurpriseSessions->map(function (SurpriseSession $session) {
+            $session->history_type = 'surprise';
+            $session->display_title = $session->title ?? $session->topic?->name ?? 'Kotak Kejutan';
+            return $session;
+        }))->sortByDesc(fn ($session) => $session->ended_at ?? $session->created_at)->take(5)->values();
+
+        $recentMaterials = Material::with(['topic', 'activeSession'])
+                            ->withCount('questions')
+                            ->latest()
                             ->take(5)
                             ->get();
 
@@ -37,16 +59,13 @@ class DashboardController extends Controller
                                 ->get();
 
         // Format names for display
-        foreach ($recentSessions as $session) {
-            $session->display_title = $this->getSessionName($session);
-        }
-
         return view('admin.dashboard', compact(
-            'totalTopics', 
-            'totalMaterials', 
-            'totalQuestions', 
-            'totalSessions', 
+            'totalTopics',
+            'totalMaterials',
+            'totalQuestions',
+            'totalSessions',
             'recentSessions',
+            'recentMaterials',
             'recentTournaments'
         ));
     }
@@ -57,16 +76,16 @@ class DashboardController extends Controller
         if ($session->material_id) {
             $matName = $session->material ? $session->material->name : 'Materi Dihapus';
             $matId = $session->material_id;
-            
+
             // Count previous sessions with same material to append number
             $count = GameSession::where('material_id', $matId)
                         ->where('id', '<=', $session->id)
                         ->count();
-            
+
             // Or count total? Usually sequential ID based for uniqueness in view
-             // Let's just use the logic: "Materi A (Game 1)", "Materi A (Game 2)" 
+             // Let's just use the logic: "Materi A (Game 1)", "Materi A (Game 2)"
              // or check if there are multiple
-             
+
              $totalWithSame = GameSession::where('material_id', $matId)->count();
              if($totalWithSame > 1) {
                   // Find rank

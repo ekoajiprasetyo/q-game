@@ -8,19 +8,19 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * RENAMED: questions -> game_questions (menghindari konflik dengan Q-Exam)
+     * The table is isolated by the q_game schema.
      */
     public function up(): void
     {
-        Schema::create('game_questions', function (Blueprint $table) {
+        Schema::create('questions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('topic_id')->constrained('game_topics')->onDelete('cascade');
+            $table->foreignId('created_by')->nullable()->references('id')->on('core.users')->nullOnDelete();
+            $table->foreignId('topic_id')->constrained('topics')->cascadeOnDelete();
             $table->unsignedBigInteger('material_id')->nullable(); // No constraint yet to avoid order issues
             $table->text('question_text');
             // Complete enum
             $table->enum('question_type', ['multiple_choice', 'true_false', 'short_answer', 'multiple_answer'])->default('multiple_choice');
-            $table->json('options')->nullable(); 
+            $table->json('options')->nullable();
             $table->string('correct_answer')->nullable(); // Nullable for multiple_answer which might use JSON in options or special format
             $table->enum('difficulty', ['easy', 'medium', 'hard'])->default('medium');
             $table->integer('points')->default(10);
@@ -37,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('game_questions');
+        Schema::dropIfExists('questions');
     }
 };

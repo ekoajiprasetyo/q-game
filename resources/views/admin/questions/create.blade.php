@@ -3,6 +3,7 @@
 @section('title', 'Tambah Pertanyaan')
 
 @push('styles')
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 <style>
     .options-container {
         background: var(--cream);
@@ -562,10 +563,10 @@
                 <!-- Question Text -->
                 <div class="form-group">
                     <label class="form-label" for="question_text">Pertanyaan *</label>
-                    <textarea 
-                        id="question_text" 
-                        name="question_text" 
-                        class="form-control" 
+                    <textarea
+                        id="question_text"
+                        name="question_text"
+                        class="form-control"
                         placeholder="Tuliskan pertanyaan di sini..."
                         rows="4"
                         required
@@ -619,9 +620,9 @@
                             <i data-feather="plus" style="width: 14px; height: 14px;"></i> Tambah Jawaban
                         </button>
                     </div>
-                    
+
                     <div id="shortAnswersContainer" class="d-grid gap-2"></div>
-                    
+
                     <div class="mt-3">
                         <label class="toggle-switch">
                             <input type="checkbox" id="case_sensitive" name="case_sensitive" class="toggle-input" value="1" {{ old('case_sensitive') ? 'checked' : '' }}>
@@ -701,6 +702,8 @@
 @endsection
 
 @push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 <script>
     feather.replace();
 
@@ -712,7 +715,7 @@
     topicSelect.addEventListener('change', function() {
         const selectedTopic = this.value;
         materialSelect.innerHTML = '<option value="">-- Pilih Materi --</option>';
-        
+
         materialOptions.forEach(opt => {
             if (opt.value === '') return;
             const topicId = opt.dataset.topic;
@@ -767,7 +770,7 @@
         `).join('');
         feather.replace();
         addMultiAnswerOptionBtn.style.display = multiAnswerOptions.length >= 6 ? 'none' : 'flex';
-        
+
         // Add input listeners to update text in real-time
         document.querySelectorAll('.multi-answer-text').forEach(input => {
             input.addEventListener('input', (e) => {
@@ -783,7 +786,7 @@
             const opt = multiAnswerOptions.find(o => o.key === input.dataset.key);
             if (opt) opt.text = input.value;
         });
-        
+
         const opt = multiAnswerOptions.find(o => o.key === key);
         if (opt) opt.isCorrect = isChecked;
         renderMultiAnswerOptions();
@@ -835,7 +838,7 @@
         });
 
         addOptionBtn.style.display = options.length >= 6 ? 'none' : 'flex';
-        
+
         // Add input listeners to update text in real-time
         document.querySelectorAll('.pg-option-text').forEach(input => {
             input.addEventListener('input', (e) => {
@@ -893,7 +896,7 @@
             </div>
         `).join('');
         feather.replace();
-        
+
         // Update first answer as correct_answer fallback
         const firstInput = document.querySelector('.short-answer-input');
         if (firstInput) {
@@ -902,7 +905,7 @@
                 shortAnswers[0] = this.value;
             });
         }
-        
+
         // Add listeners to update array on input
         document.querySelectorAll('.short-answer-input').forEach((input, idx) => {
             input.addEventListener('input', (e) => {
@@ -925,13 +928,13 @@
 
     function handleQuestionTypeChange(type) {
         typeOptions.forEach(opt => opt.classList.toggle('selected', opt.dataset.type === type));
-        
+
         // Hide all sections first
         multipleChoiceSection.style.display = 'none';
         multipleAnswerSection.style.display = 'none';
         trueFalseSection.style.display = 'none';
         shortAnswerSection.style.display = 'none';
-        
+
         if (type === 'multiple_choice') {
             multipleChoiceSection.style.display = 'block';
             correctAnswerInput.value = correctAnswer;
@@ -951,7 +954,7 @@
         }
 
         renderOptions();
-        
+
         const shortInputs = document.querySelectorAll('.short-answer-input');
         shortInputs.forEach(input => {
             if (type === 'short_answer') {
@@ -1005,7 +1008,7 @@
     window.openResizeModal = function(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            
+
             reader.onload = function(e) {
                 currentImageData = e.target.result;
                 document.getElementById('resizePreviewImage').src = currentImageData;
@@ -1016,7 +1019,7 @@
                 document.getElementById('imageResizeModal').classList.add('active');
                 feather.replace();
             };
-            
+
             reader.readAsDataURL(input.files[0]);
         }
     };
@@ -1037,7 +1040,7 @@
     window.closeResizeModal = function() {
         document.getElementById('imageResizeModal').classList.remove('active');
         // Reset file input if cancelled without confirming
-        if (!document.getElementById('imagePreviewWrapper').style.display || 
+        if (!document.getElementById('imagePreviewWrapper').style.display ||
             document.getElementById('imagePreviewWrapper').style.display === 'none') {
             document.getElementById('question_image').value = '';
         }
@@ -1055,16 +1058,16 @@
         const wrapper = document.getElementById('imagePreviewWrapper');
         const placeholder = document.getElementById('imageUploadPlaceholder');
         const section = document.getElementById('imageUploadSection');
-        
+
         preview.src = currentImageData;
         preview.style.transform = `scale(${currentScale / 100})`;
         preview.style.transformOrigin = 'top left';
         document.getElementById('imageScale').value = currentScale;
-        
+
         wrapper.style.display = 'inline-block';
         placeholder.style.display = 'none';
         section.classList.add('has-image');
-        
+
         closeResizeModal();
         feather.replace();
     };
@@ -1075,7 +1078,7 @@
         const placeholder = document.getElementById('imageUploadPlaceholder');
         const section = document.getElementById('imageUploadSection');
         const preview = document.getElementById('imagePreview');
-        
+
         input.value = '';
         preview.src = '';
         preview.style.transform = '';
@@ -1113,7 +1116,7 @@
         function uploadImage(file) {
             var data = new FormData();
             data.append("file", file);
-            
+
             $.ajax({
                 url: "{{ route('admin.upload-image') }}",
                 cache: false,

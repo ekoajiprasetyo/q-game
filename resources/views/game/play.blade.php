@@ -22,26 +22,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Q-Game | Bermain</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+
     <!-- Icons & Phaser -->
     <script src="https://unpkg.com/feather-icons"></script>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
+
     <!-- KaTeX for Math Formulas -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-    
+
     <!-- Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -84,22 +84,22 @@
 
         #game-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 30%; /* Balanced: 30% */
-            z-index: 1; 
+            z-index: 1;
         }
-        
+
         /* UI Layer - takes BOTTOM 70% */
         #ui-layer {
             position: absolute; top: 30%; /* Matches game-container height */
             left: 0; width: 100%; height: 70%; /* Balanced space */
-            z-index: 10; 
+            z-index: 10;
             display: flex;
-            pointer-events: none; 
+            pointer-events: none;
         }
 
         /* --- ZONES --- */
         .team-zone {
             flex: 1; height: 100%; padding: 20px;
-            display: flex; flex-direction: column; 
+            display: flex; flex-direction: column;
             justify-content: flex-start; /* Align Top of Bottom Half */
             position: relative; pointer-events: auto;
             overflow-y: auto; /* Allow scroll if content is too tall */
@@ -123,7 +123,7 @@
 
         /* Timer in Middle Top */
         .timer-box {
-            background: rgba(255,255,255,0.95); padding: 5px 0; 
+            background: rgba(255,255,255,0.95); padding: 5px 0;
             width: 160px; /* Increased Width for larger font */
             border-radius: 0 0 24px 24px; box-shadow: 0 6px 20px rgba(0,0,0,0.12);
             text-align: center; border-top: 6px solid #FF9B50;
@@ -132,7 +132,7 @@
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .timer-val { 
+        .timer-val {
             font-size: 34px; font-weight: 900; color: var(--text-main); /* Larger & Bolder */
             line-height: 1.1; margin-bottom: 0;
             font-variant-numeric: tabular-nums; /* Keeps numbers stable width without ugly font */
@@ -143,13 +143,13 @@
         /* Scores Moved to Safe Zone (Bottom of Game Area) */
         .score-pill {
             position: fixed; /* Fixed relative to screen */
-            background: rgba(255,255,255,0.98); 
+            background: rgba(255,255,255,0.98);
             border-radius: 20px; /* Larger radius */
             padding: 12px 30px; /* Larger padding */
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             text-align: center;
             min-width: 110px; /* Wider */
-            top: 18vh; 
+            top: 18vh;
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             z-index: 80;
             display: flex; flex-direction: column; justify-content: center;
@@ -157,17 +157,17 @@
         }
         .score-val { font-size: 42px; font-weight: 900; line-height: 1; margin: 4px 0; white-space: nowrap; }
         .score-label { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8; }
-        
+
         /* Specific Positions */
-        .color-red { 
-            left: 20px; 
-            color: var(--red-team); 
-            border: 2px solid #FEE2E2; border-bottom: 4px solid #FEE2E2; 
+        .color-red {
+            left: 20px;
+            color: var(--red-team);
+            border: 2px solid #FEE2E2; border-bottom: 4px solid #FEE2E2;
         }
-        .color-blue { 
-            right: 20px; 
-            color: var(--blue-team); 
-            border: 2px solid #DBEAFE; border-bottom: 4px solid #DBEAFE; 
+        .color-blue {
+            right: 20px;
+            color: var(--blue-team);
+            border: 2px solid #DBEAFE; border-bottom: 4px solid #DBEAFE;
         }
 
         .btn-control {
@@ -200,12 +200,12 @@
             gap: 20px;
             align-items: start;
         }
-        
+
         .q-content {
             display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;
             width: 100%;
         }
-        
+
         /* In Grid Mode, q-content is Left Column */
         .question-card.grid-mode .q-content {
             margin-bottom: 0;
@@ -214,7 +214,7 @@
             max-height: 450px; overflow-y: auto; /* Taller scroll area */
             display: flex; flex-direction: column; justify-content: center; /* Center content vertically too */
         }
-        
+
         /* In Grid Mode, Answer Area is Right Column */
         .question-card.grid-mode .answer-area-wrapper {
              display: flex; flex-direction: column; justify-content: center; /* Vertically center keyboard */
@@ -228,17 +228,17 @@
             margin-bottom: 10px;
         }
         .q-img { max-height: 150px; max-width: 100%; object-fit: contain; }
-        
+
         /* Grid Mode Image Sizing - MAXIMIZED */
-        .question-card.grid-mode .q-img { 
+        .question-card.grid-mode .q-img {
             max-height: 400px; /* Maximum Layout Height */
             width: 100%;       /* Force Full Width */
             object-fit: contain; /* Ensure full image visible */
             background: rgba(0,0,0,0.02); /* Subtle contrast */
         }
-        
+
         .question-card.grid-mode .q-img-wrapper {
-             background: transparent; 
+             background: transparent;
              margin-bottom: 20px;
              width: 100%; display: flex; justify-content: center;
         }
@@ -250,17 +250,17 @@
         /* Rich Text Content Styling */
         .q-text * { margin: 0; padding: 0; }
         .q-text p { margin: 0 !important; }
-        .q-text p:empty, .q-text br { display: block; content: ' '; min-height: 1em; } 
+        .q-text p:empty, .q-text br { display: block; content: ' '; min-height: 1em; }
         .q-text b, .q-text strong { font-weight: 700; }
-        .q-text img { 
-            max-width: 100%; 
-            max-height: 450px; 
+        .q-text img {
+            max-width: 100%;
+            max-height: 450px;
             width: auto !important;  /* Reset to natural width (fixes aspect ratio) */
             height: auto !important; /* Reset to natural height (fixes aspect ratio) */
-            
-            border-radius: 8px; 
+
+            border-radius: 8px;
             object-fit: contain;
-            
+
             display: block;          /* Own line */
             margin: 10px auto !important; /* Center horizontally */
         }
@@ -275,8 +275,8 @@
 
         .ans-btn {
             padding: 10px 15px; border-radius: 12px;
-            font-size: 14px; font-weight: 600; color: #334155; 
-            cursor: pointer; transition: all 0.2s; 
+            font-size: 14px; font-weight: 600; color: #334155;
+            cursor: pointer; transition: all 0.2s;
             text-align: left; /* Poin 2: Align Left */
             border: none;
             box-shadow: 0 4px 0 rgba(0,0,0,0.1);
@@ -286,22 +286,22 @@
         }
         .ans-btn:hover:not(:disabled) { filter: brightness(0.92); transform: translateY(-2px); }
         .ans-btn:active:not(:disabled) { top: 2px; box-shadow: none; transform: translateY(2px); }
-        
+
         /* Poin 4: Tombol Berwarna (Pastel) */
-        .btn-opt-0 { background: #FFD1D1; color: #991B1B; } 
-        .btn-opt-1 { background: #D1FAE5; color: #065F46; } 
-        .btn-opt-2 { background: #DBEAFE; color: #1E40AF; } 
-        .btn-opt-3 { background: #FEF3C7; color: #92400E; } 
+        .btn-opt-0 { background: #FFD1D1; color: #991B1B; }
+        .btn-opt-1 { background: #D1FAE5; color: #065F46; }
+        .btn-opt-2 { background: #DBEAFE; color: #1E40AF; }
+        .btn-opt-3 { background: #FEF3C7; color: #92400E; }
 
         /* Poin 5: Feedback Warna Lama (Light) */
         .ans-btn.correct { background: #ECFDF5 !important; color: #059669 !important; border: 2px solid #10B981 !important; box-shadow: none !important; }
         .ans-btn.wrong { background: #FEF2F2 !important; color: #B91C1C !important; border: 2px solid #EF4444 !important; box-shadow: none !important; }
-        
+
         .opt-key { display: none; } /* Poin 1: Hide Letters logic just in case */
-        
+
         /* True False Colors (Initial State) */
         .btn-opt-true { background: #10B981; color: white; border: none; box-shadow: 0 4px 0 #047857; }
-        .btn-opt-false { background: #EF4444; color: white; border: none; box-shadow: 0 4px 0 #991B1B; }  
+        .btn-opt-false { background: #EF4444; color: white; border: none; box-shadow: 0 4px 0 #991B1B; }
 
         .ans-btn:disabled { opacity: 0.8; cursor: not-allowed; transform: none !important; }
         /* Dim unselected buttons when disabled */
@@ -315,7 +315,7 @@
             display: flex; gap: 10px; pointer-events: auto;
         }
         .btn-control-orange {
-            width: 44px; height: 44px; background: var(--orange-btn); 
+            width: 44px; height: 44px; background: var(--orange-btn);
             border-radius: 12px; border: none; color: white;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; box-shadow: 0 4px 10px rgba(249, 115, 22, 0.4);
@@ -329,7 +329,7 @@
             display: flex; gap: 10px; pointer-events: auto;
         }
         .btn-control-red {
-            width: 44px; height: 44px; background: #EF4444; 
+            width: 44px; height: 44px; background: #EF4444;
             border-radius: 12px; border: none; color: white;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4);
@@ -341,9 +341,9 @@
         /* GAME OVERLAY (Base) */
         .game-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 248, 240, 0.85); 
+            background: rgba(255, 248, 240, 0.85);
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            z-index: 2000; display: none; flex-direction: column; 
+            z-index: 2000; display: none; flex-direction: column;
             align-items: center; justify-content: center;
         }
         /* PAUSE OVERLAY (Modern Dark) */
@@ -354,10 +354,10 @@
             color: #F8FAFC; text-shadow: 0 0 20px rgba(255,255,255,0.2);
             font-size: 42px; letter-spacing: 4px;
         }
-        
+
         #exit-confirm-modal { z-index: 3000; }
         .game-overlay.active { display: flex; animation: fadeIn 0.3s; }
-        
+
         .overlay-title { font-size: 32px; font-weight: 800; color: var(--text-main); margin-bottom: 20px; text-align: center; }
         .btn-large-start {
             padding: 15px 40px; font-size: 20px; font-weight: 700; color: white;
@@ -407,7 +407,7 @@
             border-radius: 16px;
             text-align: center;
             outline: none;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03); 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
             font-family: 'Inter', sans-serif;
             transition: all 0.2s;
             margin-bottom: 10px;
@@ -454,7 +454,7 @@
         .vk-btn.space { flex: 5; }
         .vk-btn.space-row-btn { font-weight: 700; border-radius: 8px; }
         .vk-btn.submit-key { background: #10B981; color: white; border: none; }
-        
+
         .vk-numpad {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
             max-width: 300px; margin: 10px auto; width: 100%;
@@ -465,7 +465,7 @@
     </style>
 </head>
 <body>
-    
+
     <div class="admin-bg-container">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
@@ -537,7 +537,7 @@
     <div id="game-over-modal" class="modal-overlay">
         <div class="modal-content">
             <h2 class="modal-title">PERMAINAN SELESAI!</h2>
-            
+
             <div class="winner-display">
                 <div id="winner-icon">🏆</div>
                 <div id="winner-text">TIM MERAH MENANG!</div>
@@ -572,7 +572,7 @@
             opacity: 0; transition: opacity 0.3s;
         }
         .modal-overlay.show { display: flex; opacity: 1; }
-        
+
         .modal-content {
             background: rgba(255, 255, 255, 0.95);
             padding: 40px; border-radius: 30px;
@@ -590,9 +590,9 @@
         .winner-display { margin-bottom: 30px; }
         #winner-icon { font-size: 60px; margin-bottom: 10px; animation: bounce 1s infinite; }
         #winner-text { font-size: 28px; font-weight: 900; color: #F59E0B; text-transform: uppercase; line-height: 1.2; }
-        
+
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        
+
         @keyframes toastSlideIn {
             0% { opacity: 0; transform: translateY(-20px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -606,7 +606,7 @@
         }
         .score-card.red { background: #FEF2F2; color: #B91C1C; border: 2px solid #FECACA; }
         .score-card.blue { background: #EFF6FF; color: #1E40AF; border: 2px solid #BFDBFE; }
-        
+
         .sc-val { font-size: 32px; font-weight: 800; line-height: 1; }
         .sc-label { font-size: 12px; font-weight: 700; opacity: 0.7; }
 
@@ -698,16 +698,16 @@
 
                 // Static Center Line (Vertical dashed line only)
                 const line = this.add.graphics();
-                line.lineStyle(2, 0x000000, 0.1); 
+                line.lineStyle(2, 0x000000, 0.1);
                 line.beginPath();
                 line.moveTo(w/2, h * 0.1);
                 line.lineTo(w/2, h);
                 line.strokePath();
 
                 // State
-                this.tugOffset = 0; 
+                this.tugOffset = 0;
                 this.gameOver = false;
-                
+
                 // MAIN SPRITE (Contains both teams pulling)
                 this.mainChar = this.add.sprite(w / 2, cy, 'char');
                 this.mainChar.setOrigin(0.5, 0.5);
@@ -721,7 +721,7 @@
                 if(this.gameOver) return;
 
                 const force = 20; // Movement per correct answer
-                
+
                 // Red pulls to Left (-), Blue pulls to Right (+)
                 if (team === 'red') this.tugOffset -= force;
                 else this.tugOffset += force;
@@ -774,24 +774,24 @@
 
                 // Initialize state from server data (resume logic)
                 this.state = {
-                    red: { 
-                        index: window.gameData.resume.redIndex, 
-                        score: window.gameData.session.team_red_score, 
-                        finished: false 
+                    red: {
+                        index: window.gameData.resume.redIndex,
+                        score: window.gameData.session.team_red_score,
+                        finished: false
                     },
-                    blue: { 
-                        index: window.gameData.resume.blueIndex, 
-                        score: window.gameData.session.team_blue_score, 
-                        finished: false 
+                    blue: {
+                        index: window.gameData.resume.blueIndex,
+                        score: window.gameData.session.team_blue_score,
+                        finished: false
                     },
                     isPlaying: false,
                     timeLeft: window.gameData.config.duration
                 };
                 this.timerInterval = null;
-                
+
                 // Prioritize UI Logic
                 this.init();
-                
+
                 // Init Phaser with safety delay (for FS transition)
                 setTimeout(() => {
                     try {
@@ -820,7 +820,7 @@
             init() {
                 this.state.isPlaying = true;
                 this.startTimer();
-                
+
                 // Update UI scores on load/resume
                 this.updateScore('red');
                 this.updateScore('blue');
@@ -828,7 +828,7 @@
                 // IMMEDIATELY ACTIVATING SESSION
                 // This ensures timer counts even if user refreshes before answering
                 if (window.gameData.session.status === 'waiting') {
-                     this.saveToBackend('active'); 
+                     this.saveToBackend('active');
                      window.gameData.session.status = 'active'; // Local update
                 }
 
@@ -841,20 +841,20 @@
                 const data = window.gameData;
                 const set = team === 'red' ? data.questionsRed : data.questionsBlue;
                 const state = this.state[team];
-                
+
                 // Get DOM Elements
                 const cardElement = document.getElementById(`q-card-${team}`);
                 const qText = document.getElementById(`q-text-${team}`);
                 const ansDiv = document.getElementById(`ans-grid-${team}`);
                 const imgWrapper = document.getElementById(`img-wrapper-${team}`);
                 const imgEl = document.getElementById(`img-${team}`);
-                
+
                 // Cleanup PGC Button if exists
                 if(cardElement) {
                     const oldBtn = cardElement.querySelector('.pgc-submit-btn');
                     if(oldBtn) oldBtn.remove();
                 }
-                
+
                 // 1. Check Data Availability
                 if (!set || set.length === 0) {
                     if(qText) qText.innerText = "No Data";
@@ -884,7 +884,7 @@
                 }
 
                 const q = set[state.index];
-                
+
                 // 3. AUTO LAYOUT LOGIC (Grid Mode)
                 const hasImage = !!q.image_url;
                 const isLongText = q.question_text && q.question_text.length > 150; // Lower threshold to 150
@@ -899,13 +899,13 @@
                         cardElement.classList.remove('grid-mode');
                     }
                 }
-                
+
                 // Utility class for CSS targeting
                 if(ansDiv) ansDiv.classList.add('answer-area-wrapper');
 
                 // 4. RENDER TEXT
-                if(qText) qText.innerHTML = q.question_text || "Error"; 
-                
+                if(qText) qText.innerHTML = q.question_text || "Error";
+
                 // 5. RENDER IMAGE
                 if (q.image_url) {
                     let src = q.image_url;
@@ -924,7 +924,7 @@
                 // 6. RENDER ANSWERS
                 if(!ansDiv) return;
                 ansDiv.innerHTML = '';
-                
+
                 // Reset Grid Style
                 ansDiv.style.display = 'grid';
                 ansDiv.style.gridTemplateColumns = '1fr 1fr';
@@ -935,11 +935,11 @@
                 if (type === 'multiple_choice' || type === 'pilihan_ganda') {
                     let choices = [];
                     if (Array.isArray(q.options)) {
-                         choices = [...q.options]; 
+                         choices = [...q.options];
                     } else if (q.options && typeof q.options === 'object') {
                          choices = Object.keys(q.options).map(k => ({ key: k, text: q.options[k] }));
                     }
-                    
+
                     choices.sort(() => Math.random() - 0.5);
 
                     choices.forEach((opt, idx) => {
@@ -952,8 +952,8 @@
 
                 } else if (type === 'true_false' || type === 'benar_salah') {
                     const opts = [
-                        { key: 'true', text: 'BENAR', cls: 'btn-opt-true' }, 
-                        { key: 'false', text: 'SALAH', cls: 'btn-opt-false' } 
+                        { key: 'true', text: 'BENAR', cls: 'btn-opt-true' },
+                        { key: 'false', text: 'SALAH', cls: 'btn-opt-false' }
                     ];
                     opts.forEach(opt => {
                         const btn = document.createElement('button');
@@ -972,8 +972,8 @@
 
                     const input = document.createElement('div');
                     input.className = 'short-answer-display active';
-                    input.dataset.val = ''; 
-                    
+                    input.dataset.val = '';
+
                     const cursor = document.createElement('span');
                     cursor.className = 'cursor-blink';
                     input.appendChild(cursor);
@@ -984,7 +984,7 @@
                         // Find buttons in numpad/keyboard if they exist
                         const numpadOk = keyboardContainer.querySelector('.vk-btn-ok');
                         const kbSubmit = keyboardContainer.querySelector('.vk-btn-submit');
-                        
+
                         [numpadOk, kbSubmit].forEach(b => {
                             if(b) {
                                 if(hasVal) {
@@ -1003,7 +1003,7 @@
                     Object.defineProperty(input, 'value', {
                         get() { return this.dataset.val; },
                         set(v) {
-                            if(this.disabled) return; 
+                            if(this.disabled) return;
                             this.dataset.val = v;
                             this.innerText = v;
                             this.appendChild(cursor);
@@ -1038,14 +1038,14 @@
 
                     const btn = document.createElement('button');
                     btn.innerText = 'Kirim Jawaban';
-                    btn.className = 'btn-capsule'; 
+                    btn.className = 'btn-capsule';
                     btn.onclick = () => {
-                        this.handleAnswer(team, input, input.value, q.correct_answer); 
+                        this.handleAnswer(team, input, input.value, q.correct_answer);
                     };
 
                     ansDiv.appendChild(input);
                     ansDiv.appendChild(keyboardContainer);
-                    ansDiv.appendChild(btn); 
+                    ansDiv.appendChild(btn);
 
                     const isNumeric = /^\d+$/.test(q.correct_answer || '');
                     if (isNumeric) {
@@ -1070,7 +1070,7 @@
 
                     choices.forEach((opt, idx) => {
                         const wrapper = document.createElement('button');
-                        wrapper.className = `ans-btn btn-opt-${idx % 4}`; 
+                        wrapper.className = `ans-btn btn-opt-${idx % 4}`;
                         wrapper.style.display = 'flex';
                         wrapper.style.alignItems = 'center';
                         wrapper.style.gap = '12px';
@@ -1078,11 +1078,11 @@
                         wrapper.style.textAlign = 'left';
                         wrapper.style.position = 'relative';
                         wrapper.style.transition = 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
-                        
+
                         const iconSpan = document.createElement('span');
                         iconSpan.innerHTML = feather.icons['square'].toSvg({ width: 20, height: 20, "stroke-width": 2.5 });
                         iconSpan.style.opacity = '0.6';
-                        
+
                         const lbl = document.createElement('span');
                         lbl.innerHTML = opt.text || opt.value;
                         lbl.style.flex = 1;
@@ -1104,7 +1104,7 @@
                                 wrapper.style.filter = 'brightness(0.95)';
                                 wrapper.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.1)';
                                 iconSpan.innerHTML = feather.icons['check-square'].toSvg({ width: 22, height: 22, "stroke-width": 3 });
-                                iconSpan.style.color = '#10B981'; 
+                                iconSpan.style.color = '#10B981';
                                 iconSpan.style.opacity = '1';
                             }
                         };
@@ -1119,8 +1119,8 @@
                         const btn = document.createElement('button');
                         btn.type = 'button';
                         btn.className = 'pgc-submit-btn';
-                        btn.innerHTML = 'Kirim'; 
-                        
+                        btn.innerHTML = 'Kirim';
+
                         btn.style.cssText = `
                             display: block; width: 100%; margin-top: 15px; padding: 14px 20px;
                             background: linear-gradient(135deg, #10B981, #059669); color: white;
@@ -1128,13 +1128,13 @@
                             cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
                             transition: all 0.2s; position: relative; z-index: 50;
                         `;
-                        
+
                         btn.addEventListener('click', (e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             this.handleAnswer(team, btn, Array.from(selectedKeys), q.correct_answer || q.options.correct_answers);
                         });
-                        
+
                         btn.addEventListener('mouseenter', () => { btn.style.transform = 'translateY(-2px)'; btn.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.5)'; });
                         btn.addEventListener('mouseleave', () => { btn.style.transform = 'none'; btn.style.boxShadow = '0 4px 15px rgba(16, 185, 129, 0.4)'; });
 
@@ -1157,6 +1157,7 @@
             }
 
             // --- KEYBOARDS ---
+            // Optimized for Multi-Touch IFP
             renderNumpad(container, inputElement) {
                 container.className = 'vk-numpad';
                 const keys = ['1','2','3','4','5','6','7','8','9','⌫','0','OK'];
@@ -1164,58 +1165,41 @@
                     const btn = document.createElement('button');
                     btn.className = 'vk-btn';
                     btn.innerText = key;
+                    btn.style.touchAction = 'none'; // Critical for fast multi-touch
+
                     if(key === 'OK') {
                         btn.className += ' vk-btn-ok'; // Marker class
                         btn.style.background = '#9CA3AF'; // Start disabled
                         btn.style.opacity = '0.5';
                         btn.style.color = 'white';
                         btn.dataset.disabled = 'true';
-                        
-                        btn.onclick = () => { 
-                            if(btn.dataset.disabled === 'true') {
-                                // Show Toast
-                                const t = document.createElement('div');
-                                t.innerText = 'Jawaban belum diisi!';
-                                t.style.cssText = 'position:fixed; top:20px; right:20px; background:rgba(220, 38, 38, 0.9); color:white; padding:12px 24px; border-radius:12px; z-index:9999; font-weight:600; box-shadow: 0 4px 12px rgba(0,0,0,0.2); animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; display:flex; align-items:center; gap:8px;';
-                                t.innerHTML = '<span>⚠️</span> Jawaban belum diisi!';
-                                document.body.appendChild(t);
-                                setTimeout(() => t.remove(), 2000);
-                                return;
-                            } 
-                             // Call logic directly using the shimmed value
-                             this.handleAnswer(
-                                 // Infer team from container ID or passed context? 
-                                 // We need to know which team this is.
-                                 // Hack: Check closest team zone ID
-                                 container.closest('.team-red-zone') ? 'red' : 'blue', 
-                                 inputElement, // Pass the Fake Input DIV
-                                 inputElement.value, // The shimmed value getter
-                                 // We need the correct answer to validate. But handleAnswer expects just 3 args usually?
-                                 // Wait, handleAnswer(team, element, selected, correct). We need 'correct'.
-                                 // Limitation: renderNumpad doesn't know 'correct'.
-                                 // Solution: Simulate click on the hidden 'Kirim' button which HAS the closure with 'correct'.
-                                 null 
-                             );
-                             
-                             // Better approach: Find the sibling hidden button and click it.
-                             // The structure is: ansDiv -> [FakeInput, NumpadContainer, HiddenButton]
+
+                        btn.addEventListener('pointerdown', (e) => {
+                             e.preventDefault(); // Prevent ghost click
+                             if(btn.dataset.disabled === 'true') {
+                                 // Haptic feedback simulation
+                                 btn.style.transform = 'scale(0.95)';
+                                 setTimeout(() => btn.style.transform = 'scale(1)', 100);
+                                 return;
+                             }
                              const ansDiv = container.parentElement;
                              const hiddenBtn = ansDiv.querySelector('.btn-capsule');
                              if(hiddenBtn) hiddenBtn.click();
-                        };
+                        });
                     } else if (key === '⌫') {
                         btn.style.background = '#FECACA'; btn.style.color = '#B91C1C';
-                        btn.onclick = () => { 
-                            // Support both Input and Fake Div
-                            let val = inputElement.value || ''; 
+                        btn.addEventListener('pointerdown', (e) => {
+                            e.preventDefault();
+                            let val = inputElement.value || '';
                             val = val.slice(0, -1);
-                            inputElement.value = val; // Trigger setter (Div) or native (Input)
-                        };
+                            inputElement.value = val;
+                        });
                     } else {
-                        btn.onclick = () => {
+                        btn.addEventListener('pointerdown', (e) => {
+                            e.preventDefault();
                             let val = inputElement.value || '';
                             inputElement.value = val + key;
-                        };
+                        });
                     }
                     container.appendChild(btn);
                 });
@@ -1223,18 +1207,10 @@
 
             renderFullKeyboard(container, inputElement, submitCallback) {
                 container.className = 'vk-container';
-                
-                // Initialize State if not exist in this instance (or use closure var if preferred, but instance property is safer)
-                // We'll attach it to the container to keep it localized or just use a local let if re-render is fully self-contained.
-                // Better: Check if we have a state object attached to container, if not init.
-                // Initialize State
-                if (!container.kbState) {
-                    container.kbState = { shift: false, caps: false };
-                }
+                if (!container.kbState) { container.kbState = { shift: false, caps: false }; }
 
                 const renderKeys = () => {
-                    container.innerHTML = ''; 
-
+                    container.innerHTML = '';
                     const isUpper = container.kbState.caps || container.kbState.shift;
                     const rows = [
                         ['1','2','3','4','5','6','7','8','9','0'],
@@ -1246,95 +1222,83 @@
                     rows.forEach(rowKeys => {
                         const rowDiv = document.createElement('div');
                         rowDiv.className = 'vk-row';
-                        
                         rowKeys.forEach(rawChar => {
                             const btn = document.createElement('button');
                             btn.className = 'vk-btn';
-                            
+                            btn.style.touchAction = 'none';
+
                             let displayChar = rawChar;
                             if (rawChar.length === 1 && /[a-z]/.test(rawChar)) {
                                 displayChar = isUpper ? rawChar.toUpperCase() : rawChar;
                             }
-                            
                             btn.innerText = displayChar;
 
                             if (rawChar === 'caps') {
-                                btn.className += ' wide';
-                                btn.innerText = 'CAPS';
-                                btn.style.fontSize = '12px';
-                                if (container.kbState.caps) { 
-                                    btn.style.background = '#10B981'; btn.style.color = 'white'; 
-                                } else {
-                                    btn.style.background = '#E2E8F0'; btn.style.color = '#475569';
-                                }
-                                btn.onclick = () => {
+                                btn.className += ' wide'; btn.innerText = 'CAPS'; btn.style.fontSize = '12px';
+                                btn.style.background = container.kbState.caps ? '#10B981' : '#E2E8F0';
+                                btn.style.color = container.kbState.caps ? 'white' : '#475569';
+                                btn.addEventListener('pointerdown', (e) => {
+                                    e.preventDefault();
                                     container.kbState.caps = !container.kbState.caps;
                                     renderKeys();
-                                };
+                                });
                             }
                             else if (rawChar === 'shift') {
-                                btn.className += ' wide';
-                                btn.innerText = '⇧';
-                                if (container.kbState.shift) { 
-                                    btn.style.background = '#10B981'; btn.style.color = 'white'; 
-                                } else {
-                                    btn.style.background = '#E2E8F0'; btn.style.color = '#475569';
-                                }
-                                btn.onclick = () => {
+                                btn.className += ' wide'; btn.innerText = '⇧';
+                                btn.style.background = container.kbState.shift ? '#10B981' : '#E2E8F0';
+                                btn.style.color = container.kbState.shift ? 'white' : '#475569';
+                                btn.addEventListener('pointerdown', (e) => {
+                                    e.preventDefault();
                                     container.kbState.shift = !container.kbState.shift;
                                     renderKeys();
-                                };
+                                });
                             }
                             else if (rawChar === '⌫') {
-                                btn.className += ' wide'; 
-                                btn.style.background = '#FECACA'; 
-                                btn.innerText = '⌫';
-                                btn.onclick = () => {
-                                    // Robust Delete
+                                btn.className += ' wide'; btn.style.background = '#FECACA'; btn.innerText = '⌫';
+                                btn.addEventListener('pointerdown', (e) => {
+                                    e.preventDefault();
                                     let val = inputElement.value || '';
-                                    val = val.slice(0, -1);
-                                    inputElement.value = val;
-                                };
+                                    inputElement.value = val.slice(0, -1);
+                                });
                             }
                             else {
                                 const charToInput = (rawChar.length === 1 && /[a-z]/.test(rawChar)) ? displayChar : rawChar;
-                                btn.onclick = () => {
-                                    // Robust Input
+                                btn.addEventListener('pointerdown', (e) => {
+                                    e.preventDefault();
                                     let val = inputElement.value || '';
                                     inputElement.value = val + charToInput;
-                                    
                                     if (container.kbState.shift) {
                                         container.kbState.shift = false;
                                         renderKeys();
                                     }
-                                };
+                                });
                             }
-                            
                             rowDiv.appendChild(btn);
                         });
                         container.appendChild(rowDiv);
                     });
-                    
+
                     const spaceRow = document.createElement('div');
                     spaceRow.className = 'vk-row';
-                    
+
                     const spaceBtn = document.createElement('button');
                     spaceBtn.className = 'vk-btn space-row-btn';
-                    spaceBtn.style.flex = 2;
-                    spaceBtn.innerText = 'SPACE';
-                    spaceBtn.onclick = () => {
+                    spaceBtn.style.flex = 2; spaceBtn.innerText = 'SPACE';
+                    spaceBtn.style.touchAction = 'none';
+                    spaceBtn.addEventListener('pointerdown', (e) => {
+                        e.preventDefault();
                         let val = inputElement.value || '';
                         inputElement.value = val + ' ';
-                    };
-                    
+                    });
+
                     const submitBtn = document.createElement('button');
-                    submitBtn.className = 'vk-btn space-row-btn submit-key vk-btn-submit'; // Marker class
-                    submitBtn.style.flex = 1;
-                    submitBtn.style.background = '#9CA3AF'; // Start disabled
-                    submitBtn.style.opacity = '0.5';
-                    submitBtn.dataset.disabled = 'true';
-                    submitBtn.innerText = 'Kirim';
-                    submitBtn.onclick = () => {
+                    submitBtn.className = 'vk-btn space-row-btn submit-key vk-btn-submit';
+                    submitBtn.style.flex = 1; submitBtn.style.background = '#9CA3AF'; submitBtn.style.opacity = '0.5';
+                    submitBtn.dataset.disabled = 'true'; submitBtn.innerText = 'Kirim';
+                    submitBtn.style.touchAction = 'none';
+
+                    submitBtn.addEventListener('pointerdown', (e) => {
+                        e.preventDefault();
                         if(submitBtn.dataset.disabled === 'true') {
                              const t = document.createElement('div');
                              t.innerText = 'Jawaban belum diisi!';
@@ -1344,32 +1308,30 @@
                              setTimeout(() => t.remove(), 2000);
                              return;
                         }
-                        // DELEGATE TO HIDDEN BUTTON to ensure context consistency (esp 'correct' answer via closure)
                         const ansDiv = container.parentElement;
                          const hiddenBtn = ansDiv.querySelector('.btn-capsule');
                          if(hiddenBtn) hiddenBtn.click();
-                    };
+                    });
 
                     spaceRow.appendChild(spaceBtn);
                     spaceRow.appendChild(submitBtn);
                     container.appendChild(spaceRow);
                 };
-
                 renderKeys();
             }
 
             handleAnswer(team, element, selected, correct) {
                 if (!this.state.isPlaying) return;
-                
+
                 // Prevent Double Submission (Race Condition Fix)
                 if (this.state[team].processingAnswer) return;
-                
+
                 const q = (team === 'red' ? window.gameData.questionsRed : window.gameData.questionsBlue)[this.state[team].index];
                 const type = q.question_type || 'multiple_choice';
-                
+
                 // Set Processing Flag immediately
                 this.state[team].processingAnswer = true;
-                
+
                 let isCorrect = false;
 
                 // Validation
@@ -1380,11 +1342,11 @@
                      // Support Admin Codes: 'T' for True, 'F' for False
                      else if ((s === 'true' || s === 'benar') && (c === '1' || c === 'true' || c === 'benar' || c === 't')) isCorrect = true;
                      else if ((s === 'false' || s === 'salah') && (c === '0' || c === 'false' || c === 'salah' || c === 'f')) isCorrect = true;
-                } 
+                }
                 else if (type === 'short_answer' || type === 'isian_singkat') {
                      const userAns = String(selected).trim().toLowerCase();
                      const correctAns = String(correct).trim().toLowerCase();
-                     isCorrect = userAns === correctAns; 
+                     isCorrect = userAns === correctAns;
                      if (!isCorrect && q.options && q.options.answers) {
                          isCorrect = q.options.answers.some(ans => String(ans).trim().toLowerCase() === userAns);
                      }
@@ -1395,18 +1357,18 @@
                      const userSet = new Set(userArr.map(s => String(s).trim().toUpperCase()));
 
                      let correctKeys = [];
-                     
+
                      // 1. Handle Array directly
                      if (Array.isArray(correct)) {
                          correctKeys = correct;
-                     } 
+                     }
                      // 2. Handle String (JSON or CSV)
                      else if (typeof correct === 'string') {
                          const clean = correct.trim();
                          // Try JSON first
                          if (clean.startsWith('[') || clean.startsWith('{')) {
-                             try { correctKeys = JSON.parse(clean); } 
-                             catch(e) { 
+                             try { correctKeys = JSON.parse(clean); }
+                             catch(e) {
                                  // If JSON fails, fallback to CSV if comma exists
                                  if(clean.includes(',')) correctKeys = clean.split(',');
                                  else correctKeys = [clean];
@@ -1423,7 +1385,7 @@
                      }
 
                      const goalSet = new Set(correctKeys.map(s => String(s).trim().toUpperCase()));
-                     
+
                      // Compare Sets
                      // console.log('[PGC Debug] User:', [...userSet], 'Goal:', [...goalSet]);
                      if (userSet.size === goalSet.size) isCorrect = [...userSet].every(key => goalSet.has(key));
@@ -1432,10 +1394,10 @@
                 // Feedback
                 const grid = document.getElementById(`ans-grid-${team}`);
                 if(type === 'short_answer' || type === 'isian_singkat') {
-                     element.disabled = true; 
+                     element.disabled = true;
                      element.style.borderColor = isCorrect ? '#10B981' : '#EF4444';
                      element.style.background = isCorrect ? '#ECFDF5' : '#FEF2F2';
-                } 
+                }
                 else if (type === 'multiple_answer' || type === 'pilihan_ganda_kompleks') {
                      // Fix PGC Error: Use 'element' directly (it's the submit button)
                      if(element) {
@@ -1461,7 +1423,7 @@
                      this.state[team].score += (q.points || 10);
                      this.updateScore(team);
                      this.saveToBackend('playing');
-                     
+
                      // Trigger Phaser Animation
                      if(window.tugWarScene && window.tugWarScene.pull) {
                          window.tugWarScene.pull(team);
@@ -1476,17 +1438,35 @@
                     formData.append('question_id', q.id);
                     formData.append('is_correct', isCorrect ? 1 : 0);
                     formData.append('round_index', this.state[team].index + 1);
-                    
+
                     let ansVal = selected;
                     if(Array.isArray(selected) || typeof selected === 'object') ansVal = JSON.stringify(selected);
                     formData.append('answer', ansVal);
 
                     fetch('{{ route("game.submit-answer") }}', {
                         method: 'POST',
-                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json'
+                        },
                         body: formData
-                    }).catch(err => console.error(err));
-                } catch(e) { console.error("Submit error", e); }
+                    })
+                    .then(res => {
+                        if(!res.ok) throw new Error("HTTP " + res.status);
+                        return res.json();
+                    })
+                    .then(d => {
+                        if(!d.success) console.warn("Backend fail:", d);
+                    })
+                    .catch(err => {
+                         console.error("Answer Submit Failed:", err);
+                         const toast = document.createElement('div');
+                         toast.innerText = "⚠️ Gagal Simpan Jawaban! Cek Koneksi.";
+                         toast.style.cssText = "position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#EF4444; color:white; padding:10px 20px; border-radius:20px; font-weight:bold; z-index:10000; font-size:14px; box-shadow:0 4px 12px rgba(0,0,0,0.3);";
+                         document.body.appendChild(toast);
+                         setTimeout(()=>toast.remove(), 4000);
+                    });
+                } catch(e) { console.error("Submit logic error", e); }
 
                 setTimeout(() => {
                     this.state[team].index++;
@@ -1521,21 +1501,21 @@
                     const now = Date.now();
                     const diff = this.state.endTime - now;
                     const newTimeLeft = Math.floor(diff / 1000);
-                    
+
                     if (newTimeLeft !== this.state.timeLeft) {
                         this.state.timeLeft = newTimeLeft;
                         if (this.state.timeLeft < 0) this.state.timeLeft = 0;
                         this.updateTimerDisplay(this.state.timeLeft);
                     }
 
-                    if(diff <= 0) { 
-                        clearInterval(this.timerInterval); 
+                    if(diff <= 0) {
+                        clearInterval(this.timerInterval);
                         this.state.timeLeft = 0;
                         this.updateTimerDisplay(0);
-                        this.endGame(); 
+                        this.endGame();
                     }
                 }, 100);
-                
+
                 // Immediate update
                 const diff = this.state.endTime - Date.now();
                 this.updateTimerDisplay(Math.max(0, Math.floor(diff/1000)));
@@ -1558,30 +1538,30 @@
                 } else {
                    this.state.isPaused = true;
                    this.state.pausedAt = Date.now();
-                   
+
                    // RESET UI STATE
                    document.getElementById('pause-content-static').style.display = 'flex';
                    document.getElementById('pause-content-countdown').style.display = 'none';
-                   
+
                    if(showOverlay) document.getElementById('pause-overlay').classList.add('active'); // Only show if requested
-                   
+
                    if(window.tugWarScene && window.tugWarScene.physics && window.tugWarScene.physics.world) {
                        window.tugWarScene.physics.world.pause();
                    }
                 }
             }
-            
+
             resumeGame() {
                 if(!this.state.isPaused) return;
                 this.state.isPaused = false;
                 const now = Date.now();
                 const pausedDuration = now - this.state.pausedAt;
-                
+
                 // Shift EndTime forward
                 this.state.endTime += pausedDuration;
                 const sid = window.gameData.session.id;
                 sessionStorage.setItem(`qgame_end_${sid}`, this.state.endTime);
-                
+
                 document.getElementById('pause-overlay').classList.remove('active');
                 if(window.tugWarScene && window.tugWarScene.physics && window.tugWarScene.physics.world) {
                        window.tugWarScene.physics.world.resume();
@@ -1593,7 +1573,7 @@
                 this.state.isPlaying = false;
                 const sid = window.gameData.session.id;
                 sessionStorage.removeItem(`qgame_end_${sid}`);
-                
+
                 // NOTE: saveToBackend is now called in showGameOver AFTER winner is determined
                 this.showGameOver(null, 'Waktu Habis!');
             }
@@ -1629,7 +1609,7 @@
                                 else window.location.href = url;
                             };
                         }
-                        
+
                         // Update "Review" link with the history session ID
                         const reviewBtn = document.getElementById('btn-review');
                         if(reviewBtn && data.session_id) {
@@ -1647,7 +1627,7 @@
 
                 const sRed = this.state.red.score;
                 const sBlue = this.state.blue.score;
-                
+
                 // Calculate Max Score for "Perfect" check
                 const allQs = window.gameData.questionsRed || [];
                 const maxScore = allQs.reduce((acc, q) => acc + (q.points || 10), 0);
@@ -1672,7 +1652,7 @@
                         }
                     }
                 }
-                
+
                 const isTournament = window.gameData.session.game_mode === 'tournament';
 
                 // SAVE FINAL RESULT TO BACKEND
@@ -1683,10 +1663,10 @@
                     const tournamentPin = window.gameData.tournamentPin || '';
                     const redName = (window.gameData.session.team_red_name || 'TIM MERAH').toUpperCase();
                     const blueName = (window.gameData.session.team_blue_name || 'TIM BIRU').toUpperCase();
-                    
+
                     const overlay = document.getElementById('game-over-modal');
                     const content = overlay.querySelector('.modal-content');
-                    
+
                     const winnerText = winner === 'red' ? redName + ' MENANG!' : winner === 'blue' ? blueName + ' MENANG!' : 'SERI!';
                     const winnerColor = winner === 'red' ? '#DC2626' : winner === 'blue' ? '#2563EB' : '#F59E0B';
 
@@ -1710,7 +1690,7 @@
                     `;
                     overlay.classList.add('show');
                     if(typeof feather !== 'undefined') feather.replace();
-                    
+
                     // Robust Confetti (Create Canvas Manually)
                     if(winner !== 'draw' && typeof confetti !== 'undefined') {
                         // Create dedicated canvas
@@ -1718,7 +1698,7 @@
                         c.style.position = 'fixed'; c.style.width = '100%'; c.style.height = '100%';
                         c.style.left = '0'; c.style.top = '0'; c.style.zIndex = '3000'; c.style.pointerEvents = 'none';
                         document.body.appendChild(c);
-                        
+
                         let myConfetti = confetti.create(c, { resize: true });
                         const end = Date.now() + 5000;
 
@@ -1791,7 +1771,7 @@
         window.togglePauseGame = function() {
             if(window.currentGame) window.currentGame.togglePause();
         }
-        
+
         window.toggleFullscreenGame = function() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(e => console.log(e));
@@ -1799,15 +1779,15 @@
                 document.exitFullscreen();
             }
         }
-        
+
         window.resumeGameOverlay = function() {
              document.getElementById('pause-content-static').style.display = 'none';
              document.getElementById('pause-content-countdown').style.display = 'flex';
-             
+
              let count = 3;
              const el = document.getElementById('resume-count');
              el.innerText = count;
-             
+
              const t = setInterval(() => {
                  count--;
                  if(count > 0) el.innerText = count;
@@ -1826,21 +1806,21 @@
              const staticContent = document.getElementById('pause-content-static');
              const countContent = document.getElementById('pause-content-countdown');
              const countEl = document.getElementById('resume-count');
-             
+
              // Ensure paused state
              if(window.currentGame && !window.currentGame.state.isPaused) {
                  window.currentGame.togglePause();
              }
 
              document.getElementById('start-overlay').classList.remove('active');
-             
+
              pauseOverlay.classList.add('active');
              staticContent.style.display = 'none';
              countContent.style.display = 'flex';
-             
+
              let count = 5;
              countEl.innerText = count;
-             
+
              const t = setInterval(() => {
                  count--;
                  if(count > 0) countEl.innerText = count;
@@ -1862,16 +1842,16 @@
              // Start countdown after fullscreen request
              window.startWithCountdown();
         }
-        
+
         // --- EXIT LOGIC ---
         window.showExitConfirmation = function() {
             // Force pause engine BUT NO OVERLAY
             if(window.currentGame && !window.currentGame.state.isPaused) {
-                 window.currentGame.togglePause(false); 
+                 window.currentGame.togglePause(false);
             }
             document.getElementById('exit-confirm-modal').classList.add('show');
         }
-        
+
         window.cancelExit = function() {
             document.getElementById('exit-confirm-modal').classList.remove('show');
             // Resume game immediately if it was paused for exit
@@ -1879,11 +1859,11 @@
                  window.currentGame.resumeGame();
             }
         }
-        
+
         window.finalizeExit = function() {
             const sid = window.gameData.session.id;
             sessionStorage.removeItem(`qgame_end_${sid}`);
-            
+
             // Delete Session from Backend
             fetch('/game/api/cancel-session', {
                 method: 'POST',
@@ -1912,8 +1892,8 @@
              }
              // Reset body styles to default (fix for Review page layout)
              document.body.style.overflow = '';
-             document.body.style.height = ''; 
-             
+             document.body.style.height = '';
+
              if(typeof confetti !== 'undefined') {
                  try { confetti.reset(); } catch(e){}
              }
@@ -1930,7 +1910,7 @@
                      window.phaserGame = null;
                  }
                  window.tugWarScene = null; // Reset scene reference
-                 
+
                  // Ensure container is clean (remove any leftover canvas)
                  container.innerHTML = '';
 
@@ -1943,10 +1923,10 @@
                  // 3. Reset UI Elements (in case of Turbo cache)
                  const gameOverModal = document.getElementById('game-over-modal');
                  if(gameOverModal) gameOverModal.classList.remove('show');
-                 
+
                  const pauseOverlay = document.getElementById('pause-overlay');
                  if(pauseOverlay) pauseOverlay.classList.remove('active');
-                 
+
                  const startOverlay = document.getElementById('start-overlay');
                  if(startOverlay) startOverlay.classList.remove('active');
 
@@ -1955,14 +1935,14 @@
                  const scoreBlue = document.getElementById('scoreBlue');
                  if(scoreRed) scoreRed.innerText = '0';
                  if(scoreBlue) scoreBlue.innerText = '0';
-                 
+
                  // 4. Load Data from DOM (Turbo Friendly)
                  const payloadEl = document.getElementById('game-data-payload');
                  if(payloadEl) {
                      window.gameData = JSON.parse(payloadEl.textContent);
                  } else if(typeof window.gameData === 'undefined') {
                      console.error("Game Data not loaded yet. Retrying...");
-                     setTimeout(initGamePage, 100); 
+                     setTimeout(initGamePage, 100);
                      return;
                  }
 
@@ -1974,7 +1954,7 @@
 
                  // 6. Start New Game
                  if(typeof feather !== 'undefined') feather.replace();
-                 
+
                  // Lock body for game
                  document.body.style.overflow = 'hidden';
 
@@ -1983,17 +1963,17 @@
                         if(document.getElementById('game-container')) {
                              window.currentGame = new TugWarGame();
                         }
-                        
+
                          // Check Startup Autos
                          const params = new URLSearchParams(window.location.search);
                          if(params.get('fs_request') === '1') {
                              const sid = window.gameData.session.id;
                              sessionStorage.removeItem(`qgame_end_${sid}`); // Force Clear "Finished" flag
-                             
+
                              // Force Trigger Countdown Visualization
-                             // We ignore current fullscreen state to ensure User sees the 5..4..3.. 
+                             // We ignore current fullscreen state to ensure User sees the 5..4..3..
                              window.startWithCountdown();
-                             
+
                              // Try Best-Effort Fullscreen
                              if (!document.fullscreenElement) {
                                  document.documentElement.requestFullscreen().catch(() => {});
@@ -2002,7 +1982,7 @@
 
                     } catch(e) { console.error("Game Init Error", e); }
                  }, 150);
-                 
+
              }
         }
 

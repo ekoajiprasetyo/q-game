@@ -8,13 +8,14 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * RENAMED: topics -> game_topics (menghindari konflik dengan Q-Exam)
+     * Q-Game owns the q_game schema, so domain table names do not need an
+     * application prefix.
      */
     public function up(): void
     {
-        Schema::create('game_topics', function (Blueprint $table) {
+        Schema::create('topics', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('created_by')->nullable()->references('id')->on('core.users')->nullOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('subject')->nullable(); // mata pelajaran
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('game_topics');
+        Schema::dropIfExists('topics');
     }
 };

@@ -8,7 +8,8 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * Updated: topic_id references game_topics
+     * The game_ prefix is retained for gameplay state to distinguish it from
+     * the shared core.sessions SSO table.
      */
     public function up(): void
     {
@@ -16,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('title')->nullable(); // e.g. "Matematika - Kelas 7A"
             $table->enum('game_mode', ['race', 'turn_based'])->default('race');
-            $table->foreignId('topic_id')->constrained('game_topics')->onDelete('cascade');
+            $table->foreignId('topic_id')->constrained('topics')->cascadeOnDelete();
             $table->string('team_blue_name')->default('Tim Biru');
             $table->string('team_red_name')->default('Tim Merah');
             $table->integer('team_blue_score')->default(0);
@@ -27,7 +28,7 @@ return new class extends Migration
             $table->integer('pull_strength')->default(1); // how much rope moves per correct answer
             $table->timestamp('started_at')->nullable();
             $table->timestamp('ended_at')->nullable();
-            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('created_by')->nullable()->references('id')->on('core.users')->nullOnDelete();
             $table->timestamps();
         });
     }

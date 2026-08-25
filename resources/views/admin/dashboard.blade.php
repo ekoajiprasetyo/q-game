@@ -12,7 +12,7 @@
                 </div>
                 <div>
                     <h1 style="font-size: 1.8rem; font-weight: 800; margin: 0; line-height: 1.2; color: var(--dark);">Selamat Datang!</h1>
-                    <p class="page-subtitle" style="margin: 4px 0 0 0; line-height: 1.2;">Kelola game tarik tambang edukasi Anda dari sini</p>
+                    <p class="page-subtitle" style="margin: 4px 0 0 0; line-height: 1.2;">Kelola berbagai game edukasi dari sini</p>
                 </div>
             </div>
         </div>
@@ -95,7 +95,7 @@
                                     <div style="font-weight: 600;">{{ $material->name }}</div>
                                     <div class="text-muted" style="font-size: 0.8rem;">{{ $material->topic?->name ?? '-' }}</div>
                                 </div>
-                                
+
                                 <span class="badge badge-blue">{{ $material->questions_count }} soal</span>
 
                                 @if($material->topic_id)
@@ -119,7 +119,7 @@
                 @endif
             </div>
         </div>
-    
+
     <!-- Recent Tournaments -->
     <div class="card" style="height: 100%;">
         <div class="card-header">
@@ -151,7 +151,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Badges -->
                             <div style="display: flex; gap: 10px; align-items: center;">
                                     <!-- Jumlah Tim (Blue) -->
@@ -159,7 +159,7 @@
                                     <i data-feather="users" style="width: 14px; height: 14px; margin-right: 6px;"></i>
                                     {{ $tournament->teams->count() }} Tim
                                     </div>
-        
+
                                     <!-- PIN (Green + Copy) -->
                                     <button onclick="copyTournamentPin(this, '{{ $tournament->pin }}')" class="btn btn-sm btn-success" style="padding: 4px 12px; border-radius: 20px; font-weight: 700; display: flex; align-items: center; border: none; font-size: 0.8rem;">
                                     <span class="pin-content" style="display: flex; align-items: center;">
@@ -167,7 +167,7 @@
                                         {{ $tournament->pin }}
                                     </span>
                                     </button>
-                                    
+
                                     <a href="{{ route('admin.tournaments.show', $tournament->id) }}" class="btn btn-icon btn-ghost btn-sm" title="Kelola">
                                     <i data-feather="settings"></i>
                                     </a>
@@ -214,33 +214,38 @@
                 @else
                     <div style="padding: 0.5rem 0;">
                         @foreach($recentSessions as $session)
-                            <div style="display: flex; align-items: center; padding: 0.875rem 1.5rem; gap: 1rem; text-decoration: none; color: inherit; transition: var(--transition); cursor: pointer;" class="hover-row" onclick="openDetailModal({{ $session->id }})">
+                            <div style="display: flex; align-items: center; padding: 0.875rem 1.5rem; gap: 1rem; text-decoration: none; color: inherit; transition: var(--transition); {{ $session->history_type === 'tug' ? 'cursor: pointer;' : '' }}" class="hover-row" @if($session->history_type === 'tug') onclick="openDetailModal({{ $session->id }})" @endif>
                                 <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary)30, var(--accent-yellow)50); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
-                                    🎯
+                                    {{ $session->history_type === 'surprise' ? '🎁' : '🎯' }}
                                 </div>
                                 <div style="flex: 1;">
                                     <div style="font-weight: 600;">{{ $session->custom_title ?? ($session->title ?? 'Game #'.$session->id) }}</div>
                                     <div class="text-muted" style="font-size: 0.75rem; margin-bottom: 2px;">
-                                        ID: #{{ $session->id }}
-                                        @if($session->game_mode === 'tournament')
-                                            <span style="font-size: 0.65rem; font-weight: 700; color: white; background: #F59E0B; padding: 1px 6px; border-radius: 10px; margin-left: 4px;">TURNAMEN</span>
+                                        @if($session->history_type === 'surprise')
+                                            <span style="font-size: 0.65rem; font-weight: 700; color: white; background: #7C3AED; padding: 1px 6px; border-radius: 10px;">KOTAK KEJUTAN</span>
+                                        @else
+                                            ID: #{{ $session->id }}
+                                            @if($session->game_mode === 'tournament')
+                                                <span style="font-size: 0.65rem; font-weight: 700; color: white; background: #F59E0B; padding: 1px 6px; border-radius: 10px; margin-left: 4px;">TURNAMEN</span>
+                                            @endif
+                                            @if($session->session_pin) | PIN: {{ $session->session_pin }} @endif
                                         @endif
-                                        @if($session->session_pin) | PIN: {{ $session->session_pin }} @endif
                                     </div>
                                     <div class="text-muted" style="font-size: 0.8rem;">{{ $session->created_at->diffForHumans() }}</div>
                                 </div>
                                 <div style="text-align: right;">
-                                    <div style="font-weight: 700;">
-                                        <span style="color: var(--team-red);">{{ $session->team_red_score }}</span>
-                                        <span class="text-muted">vs</span>
-                                        <span style="color: var(--team-blue);">{{ $session->team_blue_score }}</span>
-                                    </div>
-                                    @if($session->winner_team === 'blue')
-                                        <span class="badge badge-blue">🏆 {{ $session->team_blue_name }}</span>
-                                    @elseif($session->winner_team === 'red')
-                                        <span class="badge badge-red">🏆 {{ $session->team_red_name }}</span>
+                                    @if($session->history_type === 'surprise')
+                                        @php($topScore = $session->teams->max('score'))
+                                        <div style="font-weight:700">{{ $session->teams->where('score', $topScore)->pluck('name')->join(', ') }}</div><span class="badge badge-purple">🏆 {{ $topScore }} poin</span>
                                     @else
-                                        <span class="badge badge-yellow">🤝 Seri</span>
+                                        <div style="font-weight: 700;"><span style="color: var(--team-red);">{{ $session->team_red_score }}</span><span class="text-muted">vs</span><span style="color: var(--team-blue);">{{ $session->team_blue_score }}</span></div>
+                                        @if($session->winner_team === 'blue')
+                                            <span class="badge badge-blue">🏆 {{ $session->team_blue_name }}</span>
+                                        @elseif($session->winner_team === 'red')
+                                            <span class="badge badge-red">🏆 {{ $session->team_red_name }}</span>
+                                        @else
+                                            <span class="badge badge-yellow">🤝 Seri</span>
+                                        @endif
                                     @endif
                                 </div>
                             </div>
@@ -273,21 +278,21 @@
 <script>
     function copyTournamentPin(btn, pin) {
         if(!pin) return;
-        
+
         // Prevent default button action
         if(event) {
             event.preventDefault();
             event.stopPropagation();
         }
-        
+
         navigator.clipboard.writeText(pin).then(() => {
             const originalContent = btn.innerHTML;
-            
+
             // Change style locally (optional, since it's already badge-success)
             // But we want to ensure visual feedback
             btn.innerHTML = '<span style="display: flex; align-items: center;"><i data-feather="check" style="width: 14px; height: 14px; margin-right: 6px;"></i> Tersalin</span>';
             feather.replace();
-            
+
             // Revert after 2 seconds
             setTimeout(() => {
                 btn.innerHTML = originalContent;
@@ -320,16 +325,16 @@
     window.changeModalSlide = function(dir) {
         let next = mCurrentSlide + dir;
         if(next < 0 || next >= mTotalSlides) return;
-        
+
         // Hide current
         const curEl = document.querySelector(`.m-slide[data-idx="${mCurrentSlide}"]`);
         if(curEl) curEl.classList.remove('active');
-        
+
         // Show new
         mCurrentSlide = next;
         const nextEl = document.querySelector(`.m-slide[data-idx="${mCurrentSlide}"]`);
         if(nextEl) nextEl.classList.add('active');
-        
+
         updateModalNav();
     }
 
@@ -337,17 +342,17 @@
         const prevBtn = document.getElementById('m-btn-prev');
         const nextBtn = document.getElementById('m-btn-next');
         const pageInd = document.getElementById('m-cur-page');
-        
+
         if(pageInd) pageInd.textContent = mCurrentSlide + 1;
         if(prevBtn) prevBtn.disabled = (mCurrentSlide === 0);
         if(nextBtn) nextBtn.disabled = (mCurrentSlide >= mTotalSlides - 1);
     }
-    
+
     function openDetailModal(sessionId) {
         openModal('detailGameModal');
         const container = document.getElementById('detailGameContent');
         container.innerHTML = '<div style="padding: 3rem; text-align: center; color: #64748B;"><div class="spinner-border" style="display:inline-block; width:2rem; height:2rem; border:3px solid #cbd5e1; border-top-color:var(--primary); border-radius:50%; animation:spin 1s linear infinite; margin-bottom:10px;"></div><br>Memuat data permainan...</div><style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>';
-        
+
         fetch(`/admin/sessions/${sessionId}/modal`)
             .then(response => {
                 if(!response.ok) throw new Error("Gagal memuat");
@@ -356,7 +361,7 @@
             .then(html => {
                 container.innerHTML = html;
                 if(typeof feather !== 'undefined') feather.replace();
-                
+
                 // Render KaTeX Math Formulas
                 if (typeof renderMathInElement === 'function') {
                     renderMathInElement(container, {
@@ -369,7 +374,7 @@
                         throwOnError: false
                     });
                 }
-                
+
                 // Initialize Slide State
                 const dataEl = document.getElementById('m-slides-data');
                 if(dataEl) {

@@ -40,9 +40,10 @@ class TopicController extends Controller
         }
 
         $topics = $query->latest()->paginate(9);
-        
-        // Subject list for filter dropdown (need to scope this too if we want strict privacy, 
+
+        // Subject list for filter dropdown (need to scope this too if we want strict privacy,
         // but seeing other subjects might be useful for standardization. Let's scope it to be safe)
+        // Subject list for filter dropdown
         $subjectQuery = Topic::distinct();
         if (Auth::user()->role !== 'admin') {
             $subjectQuery->where('created_by', Auth::id());
@@ -95,7 +96,8 @@ class TopicController extends Controller
     public function show(Topic $topic)
     {
         // Access Check
-        if (Auth::user()->role !== 'admin' && $topic->created_by !== Auth::id()) {
+        // Access Check - Strict
+        if (Auth::user()->role !== 'admin' && $topic->created_by != Auth::id()) {
             abort(403, 'Anda tidak memiliki akses ke topik ini.');
         }
 
@@ -108,7 +110,8 @@ class TopicController extends Controller
     public function edit(Topic $topic)
     {
         // Access Check
-        if (Auth::user()->role !== 'admin' && $topic->created_by !== Auth::id()) {
+        // Access Check - Strict
+        if (Auth::user()->role !== 'admin' && $topic->created_by != Auth::id()) {
             abort(403, 'Anda tidak memiliki akses untuk mengedit topik ini.');
         }
 
@@ -127,7 +130,8 @@ class TopicController extends Controller
     public function update(Request $request, Topic $topic)
     {
         // Access Check
-        if (Auth::user()->role !== 'admin' && $topic->created_by !== Auth::id()) {
+        // Access Check - Strict
+        if (Auth::user()->role !== 'admin' && $topic->created_by != Auth::id()) {
             abort(403, 'Anda tidak memiliki akses untuk mengupdate topik ini.');
         }
 
@@ -152,7 +156,8 @@ class TopicController extends Controller
     public function destroy(Topic $topic)
     {
         // Access Check
-        if (Auth::user()->role !== 'admin' && $topic->created_by !== Auth::id()) {
+        // Access Check - Strict
+        if (Auth::user()->role !== 'admin' && $topic->created_by != Auth::id()) {
             abort(403, 'Anda tidak memiliki akses untuk menghapus topik ini.');
         }
 
@@ -162,7 +167,7 @@ class TopicController extends Controller
                 ->route('admin.topics.index')
                 ->with('error', 'Tidak dapat menghapus topik yang memiliki materi. Hapus semua materi terlebih dahulu.');
         }
-        
+
         // Also check direct questions
         if ($topic->questions()->count() > 0) {
              return redirect()

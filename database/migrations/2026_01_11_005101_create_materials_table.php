@@ -8,14 +8,13 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * RENAMED: materials -> game_materials (menghindari konflik)
+     * The table is isolated by the q_game schema.
      */
     public function up(): void
     {
-        // Create game_materials table
-        Schema::create('game_materials', function (Blueprint $table) {
+        Schema::create('materials', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('topic_id')->constrained('game_topics')->onDelete('cascade');
+            $table->foreignId('topic_id')->constrained('topics')->cascadeOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('icon')->nullable(); // emoji icon
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('game_materials');
+        Schema::dropIfExists('materials');
     }
 };

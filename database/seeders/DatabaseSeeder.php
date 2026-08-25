@@ -15,11 +15,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed users, topics and questions
-        $this->call([
-            UserSeeder::class,
-            TopicSeeder::class,
-            QuestionSeeder::class,
-        ]);
+        // Q-Game production starts empty and uses identities from core.users.
+        // Demo seeders remain available for local development only and must be
+        // invoked explicitly by name.
     }
 }

@@ -69,10 +69,10 @@ class TournamentController extends Controller
     public function show(Tournament $tournament)
     {
         $tournament->load(['teams', 'matches.team1', 'matches.team2', 'matches.winner', 'matches.gameSession', 'matches.topic', 'matches.material']);
-        
+
         // Group matches by round for easy display
         $matchesByRound = $tournament->matches->sortBy('match_number')->groupBy('round');
-        
+
         // Get topics for match configuration (filtered by user)
         $user = auth()->user();
         if ($user->role === 'admin') {
@@ -80,7 +80,7 @@ class TournamentController extends Controller
         } else {
             $topics = Topic::with('materials')->where('created_by', $user->id)->get();
         }
-        
+
         return view('admin.tournaments.show', compact('tournament', 'matchesByRound', 'topics'));
     }
 
@@ -89,22 +89,26 @@ class TournamentController extends Controller
      */
     public function configureMatch(Request $request, TournamentMatch $match)
     {
-        $request->validate([
-            'topic_id' => 'required|exists:topics,id',
-            'material_id' => 'required|exists:materials,id',
-            'total_questions' => 'required|integer|min:1|max:50',
-            'time_per_question' => 'required|integer|min:10|max:3600',
-        ]);
+        try {
+            $request->validate([
+                'topic_id' => 'required|exists:topics,id',
+                'material_id' => 'required|exists:materials,id',
+                'total_questions' => 'required|integer|min:1|max:50',
+                'time_per_question' => 'required|integer|min:10|max:3600',
+            ]);
 
-        $match->update([
-            'topic_id' => $request->topic_id,
-            'material_id' => $request->material_id,
-            'total_questions' => $request->total_questions,
-            'time_per_question' => $request->time_per_question,
-            'is_ready' => true,
-        ]);
+            $match->update([
+                'topic_id' => $request->topic_id,
+                'material_id' => $request->material_id,
+                'total_questions' => $request->total_questions,
+                'time_per_question' => $request->time_per_question,
+                'is_ready' => true,
+            ]);
 
-        return redirect()->back()->with('success', 'Konfigurasi match berhasil disimpan!');
+            return redirect()->back()->with('success', 'Konfigurasi match berhasil disimpan!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menyimpan konfigurasi: ' . $e->getMessage());
+        }
     }
 
     public function reshuffle(Tournament $tournament, \App\Services\TournamentService $tournamentService)
@@ -124,16 +128,16 @@ class TournamentController extends Controller
     {
         // Check ownership for non-admin
         $user = auth()->user();
-        if ($user->role !== 'admin' && $tournament->created_by !== $user->id) {
+        if ($user->role !== 'admin' && $tournament->created_by != $user->id) {
             abort(403, 'Unauthorized');
         }
 
         // Delete related matches first (cascade should handle this, but being explicit)
         $tournament->matches()->delete();
-        
+
         // Delete teams
         $tournament->teams()->delete();
-        
+
         // Delete tournament
         $tournament->delete();
 

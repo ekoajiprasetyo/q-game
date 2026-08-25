@@ -23,6 +23,7 @@ Route::get('/', function () {
 
 // Game routes (public)
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\SurpriseGameController;
 
 Route::controller(GameController::class)->group(function () {
     Route::get('/game', 'index')->name('game');
@@ -33,6 +34,22 @@ Route::controller(GameController::class)->group(function () {
     Route::post('/game/api/cancel-session', 'cancelSession')->name('game.cancel-session')->middleware('throttle:30,1');
     Route::post('/game/api/submit-answer', 'submitAnswer')->name('game.submit-answer')->middleware('throttle:60,1');
     Route::get('/game/review/{session_id}', 'review')->name('game.review');
+});
+
+// Kotak Kejutan: anyone may project the board, but only the owning teacher
+// or an admin can create a session and change its state.
+Route::get('/surprise/play/{session}', [SurpriseGameController::class, 'play'])->name('surprise.play');
+Route::middleware(['auth', 'role:admin,guru'])->controller(SurpriseGameController::class)->group(function () {
+    Route::get('/surprise/setup', 'setup')->name('surprise.setup');
+    Route::post('/surprise/sessions', 'store')->name('surprise.sessions.store')->middleware('throttle:10,1');
+    Route::post('/surprise/sessions/{session}/cards/{card}/reveal', 'reveal')->name('surprise.cards.reveal')->middleware('throttle:60,1');
+    Route::post('/surprise/sessions/{session}/cards/{card}/dismiss', 'dismiss')->name('surprise.cards.dismiss')->middleware('throttle:60,1');
+    Route::post('/surprise/sessions/{session}/cards/{card}/timeout', 'timeout')->name('surprise.cards.timeout')->middleware('throttle:60,1');
+    Route::post('/surprise/sessions/{session}/cards/{card}/pause-timer', 'pauseTimer')->name('surprise.cards.pause-timer')->middleware('throttle:60,1');
+    Route::post('/surprise/sessions/{session}/cards/{card}/resume-timer', 'resumeTimer')->name('surprise.cards.resume-timer')->middleware('throttle:60,1');
+    Route::post('/surprise/sessions/{session}/cards/{card}/resolve', 'resolve')->name('surprise.cards.resolve')->middleware('throttle:60,1');
+    Route::post('/surprise/sessions/{session}/cards/{card}/resolve-power-up', 'resolvePowerUp')->name('surprise.cards.resolve-power-up')->middleware('throttle:60,1');
+    Route::post('/surprise/sessions/{session}/status', 'status')->name('surprise.status')->middleware('throttle:30,1');
 });
 
 // Public Tournament Routes
@@ -87,10 +104,4 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,guru'])-
     Route::post('tournaments/{tournament}/reshuffle', [\App\Http\Controllers\Admin\TournamentController::class, 'reshuffle'])->name('tournaments.reshuffle');
     Route::post('tournaments/matches/{match}/configure', [\App\Http\Controllers\Admin\TournamentController::class, 'configureMatch'])->name('tournaments.matches.configure');
     Route::resource('tournaments', \App\Http\Controllers\Admin\TournamentController::class);
-});
-
-// Cache Clearing Helper Route (Temporary)
-Route::get('/fix-cache-now', function() {
-    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
-    return "Cache cleared successfully! <br>" . nl2br(\Illuminate\Support\Facades\Artisan::output());
 });
